@@ -45,11 +45,12 @@ interface AdminConsoleModalProps {
 }
 
 export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({ onClose, onFeedUpdated }) => {
-  const [activeTab, setActiveTab] = useState<'funnel' | 'quarantine' | 'sources' | 'pipeline'>('funnel');
+  const [activeTab, setActiveTab] = useState<'funnel' | 'quarantine' | 'sources' | 'pipeline' | 'ranking'>('funnel');
   const [quarantinedStories, setQuarantinedStories] = useState<NewsStory[]>([]);
   const [sources, setSources] = useState<SourceRegistryItem[]>([]);
   const [pipelineLogs, setPipelineLogs] = useState<PipelineExecutionResult[]>([]);
   const [analytics, setAnalytics] = useState<AnonymousAnalyticsSummary | null>(null);
+  const [rankingMetrics, setRankingMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [runningPipeline, setRunningPipeline] = useState(false);
   const [editingStory, setEditingStory] = useState<NewsStory | null>(null);
@@ -65,12 +66,13 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({ onClose, o
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [qRes, sRes, lRes, aRes, cRes] = await Promise.all([
+      const [qRes, sRes, lRes, aRes, cRes, rRes] = await Promise.all([
         fetch('/api/admin/quarantine'),
         fetch('/api/sources'),
         fetch('/api/pipeline/logs'),
         fetch('/api/analytics/summary'),
-        fetch('/api/editorial/cadence-config')
+        fetch('/api/editorial/cadence-config'),
+        fetch('/api/ranking/metrics')
       ]);
 
       if (qRes.ok) setQuarantinedStories(await qRes.json());
@@ -78,6 +80,10 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({ onClose, o
       if (lRes.ok) setPipelineLogs(await lRes.json());
       if (aRes.ok) setAnalytics(await aRes.json());
       if (cRes.ok) setCadenceInfo(await cRes.json());
+      if (rRes.ok) {
+        const rData = await rRes.json();
+        setRankingMetrics(rData.metrics);
+      }
     } catch (err) {
       console.error('Failed to load admin data', err);
     } finally {
@@ -255,6 +261,16 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({ onClose, o
               }`}
             >
               Pipeline & Cadence
+            </button>
+            <button
+              onClick={() => setActiveTab('ranking')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeTab === 'ranking' 
+                  ? 'bg-blue-600 text-white shadow-sm' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Ranking Engine & Tiers
             </button>
           </div>
 
@@ -754,6 +770,148 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({ onClose, o
                     </div>
                   </div>
                 ))
+              )}
+            </div>
+          )}
+
+          {/* Ranking Engine & Tiers Inspection View (Section 10 of Specification) */}
+          {activeTab === 'ranking' && (
+            <div className="space-y-4">
+              {/* Specification Overview Card */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-blue-400" />
+                      European Tech Story Ranking Engine v1.0
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Deterministic 6-dimension scoring, rolling 24h quality gate, diversity-aware portfolio selection (target 25, max 30).
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-300 font-mono text-[10px] font-bold">
+                    SPEC COMPLIANT
+                  </span>
+                </div>
+
+                {/* Six Scoring Dimensions Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">ECONOMIC IMPACT</span>
+                    <span className="text-white font-semibold">25% (Log Funding Scale)</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">TECH SIGNIFICANCE</span>
+                    <span className="text-white font-semibold">20% (Breakthroughs & Depth)</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">NOVELTY & ORIGINALITY</span>
+                    <span className="text-white font-semibold">15% (Primary Reporting)</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">ECOSYSTEM IMPACT</span>
+                    <span className="text-white font-semibold">15% (Pan-EU Precedent)</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">FRESHNESS (12H HALF-LIFE)</span>
+                    <span className="text-amber-300 font-semibold">15% (Exponential Decay)</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <span className="text-slate-500 block text-[10px]">EVIDENCE CONFIDENCE</span>
+                    <span className="text-emerald-300 font-semibold">10% (Floor ≥ 30)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Edition Selection Metrics */}
+              {rankingMetrics ? (
+                <div className="space-y-4">
+                  {/* Summary Counters */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 block text-[10.5px]">SELECTED / TARGET</span>
+                      <span className="text-lg font-bold text-white">
+                        {rankingMetrics.selectedCount} / 25 <span className="text-[10px] text-slate-400 font-normal">(Max 30)</span>
+                      </span>
+                    </div>
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 block text-[10.5px]">DISTINCT COUNTRIES</span>
+                      <span className="text-lg font-bold text-blue-400">{rankingMetrics.distinctCountriesCount}</span>
+                    </div>
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 block text-[10.5px]">AVG INTRINSIC SCORE</span>
+                      <span className="text-lg font-bold text-amber-300">{rankingMetrics.averageIntrinsicScore} / 100</span>
+                    </div>
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 block text-[10.5px]">QUALITY EXCLUSIONS</span>
+                      <span className="text-lg font-bold text-slate-300">{rankingMetrics.qualityGateExclusions?.length || 0}</span>
+                    </div>
+                  </div>
+
+                  {/* Top 3 Country Concentration & Guardrails */}
+                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-white font-display">Country Concentration (Soft Cap: ≤ 25%)</span>
+                      <span className="text-[11px] font-mono text-slate-400">Top 3 Countries Share</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {rankingMetrics.countryShareTop3?.map((c: any, i: number) => (
+                        <div key={i} className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs font-mono">
+                          <span className="text-slate-400 block text-[10px]">#{i + 1} {c.country}</span>
+                          <span className="text-white font-bold">{c.sharePercent}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Freshness Buckets */}
+                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-white font-display">Freshness Distribution</span>
+                      <span className="text-[11px] font-mono text-slate-400">Exponential 12h Half-Life</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono">
+                      <div className="p-2 bg-slate-900 rounded-lg border border-slate-800">
+                        <span className="text-amber-400 block font-bold text-base">{rankingMetrics.freshnessDistribution?.under3h || 0}</span>
+                        <span className="text-slate-500 text-[10px]">Under 3h</span>
+                      </div>
+                      <div className="p-2 bg-slate-900 rounded-lg border border-slate-800">
+                        <span className="text-amber-300 block font-bold text-base">{rankingMetrics.freshnessDistribution?.under6h || 0}</span>
+                        <span className="text-slate-500 text-[10px]">3h - 6h</span>
+                      </div>
+                      <div className="p-2 bg-slate-900 rounded-lg border border-slate-800">
+                        <span className="text-sky-300 block font-bold text-base">{rankingMetrics.freshnessDistribution?.under12h || 0}</span>
+                        <span className="text-slate-500 text-[10px]">6h - 12h</span>
+                      </div>
+                      <div className="p-2 bg-slate-900 rounded-lg border border-slate-800">
+                        <span className="text-slate-300 block font-bold text-base">{rankingMetrics.freshnessDistribution?.under24h || 0}</span>
+                        <span className="text-slate-500 text-[10px]">12h - 24h</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quality Gate Exclusions Log */}
+                  {rankingMetrics.qualityGateExclusions?.length > 0 && (
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-white font-display">Quality Gate Exclusions (Audit Log)</span>
+                        <span className="text-[11px] font-mono text-amber-400">{rankingMetrics.qualityGateExclusions.length} Stories Filtered</span>
+                      </div>
+                      <div className="space-y-1.5 max-h-40 overflow-y-auto font-mono text-[11px]">
+                        {rankingMetrics.qualityGateExclusions.map((ex: any, idx: number) => (
+                          <div key={idx} className="p-2 rounded bg-slate-900/80 border border-slate-800/80 flex items-center justify-between">
+                            <span className="truncate text-slate-300 max-w-[65%]">{ex.title}</span>
+                            <span className="text-amber-300/80 text-[10px] shrink-0">{ex.reason}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-xs text-slate-500 font-mono">
+                  Loading ranking metrics and distribution logs...
+                </div>
               )}
             </div>
           )}

@@ -105,6 +105,8 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   const [imageError, setImageError] = useState(false);
   // Seamless inline disclosure: replaces country badge with light-grey text without any intrusive modal
   const [showEditorialVisualNote, setShowEditorialVisualNote] = useState(false);
+  // Seamless inline ranking intelligence disclosure: reveals tier & why it matters on (i) click
+  const [showRankingIntelligence, setShowRankingIntelligence] = useState(false);
 
   // Auto-revert editorial visual notice after 4 seconds
   useEffect(() => {
@@ -113,6 +115,14 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       return () => clearTimeout(timer);
     }
   }, [showEditorialVisualNote]);
+
+  // Auto-revert ranking intelligence notice after 5 seconds
+  useEffect(() => {
+    if (showRankingIntelligence) {
+      const timer = setTimeout(() => setShowRankingIntelligence(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showRankingIntelligence]);
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -333,23 +343,73 @@ export const StoryCard: React.FC<StoryCardProps> = ({
               </span>
             </div>
 
-            {/* In-line ⚡ FRESH (<24h) or CATCH-UP (>24h) badge on the right */}
-            {isStoryFresh ? (
-              <span 
-                className="inline-flex items-center gap-1 text-[10.5px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/30 px-2 py-0.5 rounded-full shadow-sm"
-                title="Published within the rolling 24-hour window"
-              >
-                <span className="text-[11px] text-amber-400">⚡</span> FRESH
-              </span>
-            ) : (
-              <span 
-                className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 bg-slate-800/90 border border-slate-700/60 px-2 py-0.5 rounded-full"
-                title="Earlier reporting in the 72-hour catch-up archive"
-              >
-                CATCH-UP
-              </span>
-            )}
+            {/* In-line ⚡ FRESH (<24h) or CATCH-UP (>24h) badge + Optional (i) Ranking Intelligence trigger */}
+            <div className="flex items-center gap-1.5">
+              {isStoryFresh ? (
+                <span 
+                  className="inline-flex items-center gap-1 text-[10.5px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/30 px-2 py-0.5 rounded-full shadow-sm"
+                  title="Published within the rolling 24-hour window"
+                >
+                  <span className="text-[11px] text-amber-400">⚡</span> FRESH
+                </span>
+              ) : (
+                <span 
+                  className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 bg-slate-800/90 border border-slate-700/60 px-2 py-0.5 rounded-full"
+                  title="Earlier reporting in the 72-hour catch-up archive"
+                >
+                  CATCH-UP
+                </span>
+              )}
+
+              {/* On-Demand (i) Ranking & Significance Disclosure:
+                  When tapped, toggles an inline lightweight intelligence drawer with tier & why it matters.
+                  Keeps the primary card view completely uncluttered, clean, and spacious. */}
+              {story.whyItMatters && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerHaptic('tap');
+                    setShowRankingIntelligence(prev => !prev);
+                  }}
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all shadow-sm ${
+                    showRankingIntelligence 
+                      ? 'bg-blue-600/30 border-blue-400 text-blue-300 scale-105' 
+                      : 'bg-white/[0.06] border-white/15 text-slate-400 hover:text-white hover:border-white/30 active:scale-90'
+                  }`}
+                  title="Editorial significance & ranking rationale"
+                  aria-label="Editorial significance & ranking rationale"
+                >
+                  <Info className="w-3 h-3" />
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* On-Demand Inline Ranking Intelligence Drawer (Revealed only when user taps (i)) */}
+          {showRankingIntelligence && story.whyItMatters && (
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="mb-2.5 p-2.5 rounded-xl bg-slate-900/95 border border-blue-500/30 text-xs font-sans text-slate-200 leading-snug animate-in fade-in slide-in-from-top-1 duration-200 shadow-lg backdrop-blur-md shrink-0"
+            >
+              <div className="flex items-center justify-between mb-1.5 pb-1 border-b border-white/[0.08]">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-blue-400 shrink-0" />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                    {story.tier || 'Curated Brief'}
+                  </span>
+                </div>
+                {story.provenance && (
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400">
+                    {story.provenance.replace('_', ' ')}
+                  </span>
+                )}
+              </div>
+              <p className="text-[12px] text-slate-300 leading-relaxed">
+                {story.whyItMatters}
+              </p>
+            </div>
+          )}
 
           {/* 
             Headline:

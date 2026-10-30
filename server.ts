@@ -31,6 +31,14 @@ import type {
 } from './src/types/news.ts';
 import { INITIAL_SOURCE_REGISTRY } from './src/data/curatedSources.ts';
 import { INITIAL_CURATED_STORIES } from './src/data/fallbackEdition.ts';
+import { 
+  selectDailyEdition, 
+  calculateRankingMetrics, 
+  DEFAULT_RANKING_CONFIG, 
+  validateRankingConfig,
+  type RankingEngineConfig,
+  type RankingMetrics
+} from './src/ranking/index.ts';
 
 dotenv.config();
 
@@ -65,6 +73,8 @@ const LOGS_FILE = path.join(DATA_DIR, 'pipeline_logs.json');
 const EDITION_FILE = path.join(DATA_DIR, 'edition.json');
 const CADENCE_CONFIG_FILE = path.join(DATA_DIR, 'cadence_config.json');
 const CADENCE_BACKUP_FILE = path.join(DATA_DIR, 'cadence_backup.json');
+const RANKING_CONFIG_FILE = path.join(DATA_DIR, 'ranking_config.json');
+const RANKING_METRICS_FILE = path.join(DATA_DIR, 'ranking_metrics.json');
 
 export interface CadenceConfig {
   mode: 'cadence-6h' | 'legacy-daily';
@@ -109,6 +119,15 @@ if (!fs.existsSync(CADENCE_BACKUP_FILE)) {
   writeJsonFile(CADENCE_BACKUP_FILE, LEGACY_PRE_CADENCE_CONFIG);
 }
 writeJsonFile(CADENCE_CONFIG_FILE, cadenceConfig);
+
+let rankingConfig: RankingEngineConfig = readJsonFile<RankingEngineConfig>(RANKING_CONFIG_FILE, DEFAULT_RANKING_CONFIG);
+writeJsonFile(RANKING_CONFIG_FILE, rankingConfig);
+let latestRankingMetrics: RankingMetrics | null = readJsonFile<RankingMetrics | null>(RANKING_METRICS_FILE, null);
+
+// In-memory 30s selection cache to ensure sub-millisecond response latency
+let cachedSelectionResult: import('./src/ranking/types.ts').SelectionOutput | null = null;
+let cachedSelectionTimestamp: number = 0;
+let cachedStoryCount: number = 0;
 
 function readJsonFile<T>(filePath: string, fallback: T): T {
   try {
@@ -1056,10 +1075,11 @@ async function checkAndRunScheduledIngestion(force = false) {
 
 // ---------------- API ROUTES ----------------
 
-// Get today's active feed (72-hour rolling shelf-life + continuous Top 30 catch-up archive)
+// Get today's active feed (Specification-compliant 6-dimension ranking & continuous 72-hour archive)
 app.get('/api/feed/today', (req, res) => {
   const currentUtcIso = new Date().toISOString().split('T')[0];
-  const now = Date.now();
+  const now = new Date();
+  const nowMs = now.getTime();
   const shelfLifeMs = cadenceConfig.activeShelfLifeHours * 60 * 60 * 1000;
 
   // 1. Strict active shelf-life filter (72 hours in cadence mode, 7 days in legacy)
@@ -1067,7 +1087,7 @@ app.get('/api/feed/today', (req, res) => {
     if (s.status !== 'published') return false;
     const pubTime = new Date(s.publishedAt || s.ingestedAt).getTime();
     if (isNaN(pubTime)) return true;
-    return (now - pubTime) <= shelfLifeMs;
+    return (nowMs - pubTime) <= shelfLifeMs;
   });
 
   // 2. Guarantee high-resolution editorial photography for every story
@@ -1077,28 +1097,54 @@ app.get('/api/feed/today', (req, res) => {
     }
   }
 
-  // 3. Chronological ranking: Fresh/new stories ALWAYS at the beginning, older ones behind
-  validStories.sort((a, b) => {
+  // 3. Performance-Optimized Selection Memoization (30-second cache TTL)
+  // Prevents re-running the O(N log N) greedy portfolio algorithm on every concurrent HTTP request
+  const currentTimeMs = now.getTime();
+  const shouldRecomputeRanking = !cachedSelectionResult || 
+    (currentTimeMs - cachedSelectionTimestamp) > 30000 ||
+    cachedStoryCount !== validStories.length;
+
+  if (shouldRecomputeRanking) {
+    cachedSelectionResult = selectDailyEdition(validStories, now, rankingConfig);
+    cachedSelectionTimestamp = currentTimeMs;
+    cachedStoryCount = validStories.length;
+
+    // Calculate ranking metrics for this run and persist to disk
+    const metrics = calculateRankingMetrics(cachedSelectionResult, validStories.length, rankingConfig);
+    latestRankingMetrics = metrics;
+    writeJsonFile(RANKING_METRICS_FILE, metrics);
+  }
+
+  const selectionResult = cachedSelectionResult!;
+  const rankedTopStories = selectionResult.selectedStories;
+  const metrics = latestRankingMetrics!;
+
+  // 4. Milestone Card Injection for Continuous 72-Hour Catch-Up Archive:
+  // Ranked stories (target 25, max 30) form the primary edition.
+  // Stories outside the selected set (earlier in the 72h window or lower rank) are appended behind a milestone card.
+  const rankedIds = new Set(rankedTopStories.map(s => s.id));
+  const remainingArchiveStories = validStories.filter(s => !rankedIds.has(s.id));
+
+  // Sort remaining catch-up stories chronologically for historical reading
+  remainingArchiveStories.sort((a, b) => {
     const timeA = new Date(a.publishedAt || a.ingestedAt).getTime();
     const timeB = new Date(b.publishedAt || b.ingestedAt).getTime();
     return timeB - timeA;
   });
 
-  // 4. Milestone Card Injection for Continuous 72-Hour Catch-Up Archive:
-  // When total qualified stories in the 72h window exceeds 30, insert the milestone card right at position 30
-  // so the reader seamlessly finishes the Top 30 briefing and continues into the 72h catch-up archive.
-  let selectedStories = [...validStories];
-  if (cadenceConfig.enableMilestoneCard && selectedStories.length > 30) {
+  let fullStoryDeck: NewsStory[] = [...rankedTopStories];
+
+  if (cadenceConfig.enableMilestoneCard && (rankedTopStories.length >= 20 || remainingArchiveStories.length > 0)) {
     const milestoneCard: NewsStory = {
       id: 'milestone-top30-catchup',
-      title: "You're all caught up on today's Top 30!",
-      summary: "You have reviewed Europe's top 30 startup developments. Keep swiping up to explore earlier reporting from the rolling 72-hour European catch-up archive.",
-      wordCount: 23,
+      title: "You're all caught up on today's Top European Stories!",
+      summary: `You have completed Europe's ${rankedTopStories.length} curated developments. Keep swiping up to browse earlier reporting from the rolling 72-hour European catch-up archive.`,
+      wordCount: 26,
       originalUrl: '#',
       publisher: 'Briefly Editorial Desk',
       publisherDomain: 'briefly.news',
-      publishedAt: new Date().toISOString(),
-      ingestedAt: new Date().toISOString(),
+      publishedAt: now.toISOString(),
+      ingestedAt: now.toISOString(),
       editionDate: currentUtcIso,
       country: 'Pan-European',
       region: 'Pan-European',
@@ -1106,37 +1152,84 @@ app.get('/api/feed/today', (req, res) => {
       importanceScore: 100,
       confidenceScore: 100,
       status: 'published',
-      keyClaims: ["Top 30 European Briefing Completed", "72-Hour Catch-Up Archive"],
+      keyClaims: ["Top European Briefing Completed", "72-Hour Catch-Up Archive"],
       sourceReliability: 10,
       author: 'Editorial Desk',
       imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
       isMilestone: true
     };
-    selectedStories.splice(30, 0, milestoneCard);
+    fullStoryDeck.push(milestoneCard);
+    fullStoryDeck = fullStoryDeck.concat(remainingArchiveStories);
+  } else if (remainingArchiveStories.length > 0) {
+    fullStoryDeck = fullStoryDeck.concat(remainingArchiveStories);
   }
 
-  // Group geographic distribution
+  // Group geographic distribution across ranked edition
   const geoDist: Record<string, number> = {};
-  for (const s of selectedStories) {
+  for (const s of rankedTopStories) {
     geoDist[s.region] = (geoDist[s.region] || 0) + 1;
   }
 
-  const avgImportance = selectedStories.length > 0 
-    ? Math.round(selectedStories.reduce((acc, s) => acc + s.importanceScore, 0) / selectedStories.length)
+  const avgImportance = rankedTopStories.length > 0 
+    ? Math.round(rankedTopStories.reduce((acc, s) => acc + s.importanceScore, 0) / rankedTopStories.length)
     : 0;
 
   const edition: DailyEdition = {
     date: currentUtcIso,
     publishedAt: `${currentUtcIso}T03:00:00Z`,
-    storyCount: selectedStories.length,
-    stories: selectedStories,
+    storyCount: fullStoryDeck.length,
+    stories: fullStoryDeck,
     geographicDistribution: geoDist,
-    averageImportance: avgImportance
+    averageImportance: avgImportance,
+    rankingMetrics: metrics,
+    configVersion: rankingConfig.configVersion
   };
 
   // Cache-Control headers: Allow client 30s cache, require revalidation
   res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
   res.json(edition);
+});
+
+// Ranking Metrics & Inspection API (Section 10 of Specification)
+app.get('/api/ranking/metrics', (req, res) => {
+  if (!latestRankingMetrics) {
+    const selection = selectDailyEdition(allStories, new Date(), rankingConfig);
+    latestRankingMetrics = calculateRankingMetrics(selection, allStories.length, rankingConfig);
+  }
+  res.json({
+    metrics: latestRankingMetrics,
+    configVersion: rankingConfig.configVersion,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Ranking Configuration API (Section 11 of Specification)
+app.get('/api/ranking/config', (req, res) => {
+  res.json({
+    config: rankingConfig,
+    defaults: DEFAULT_RANKING_CONFIG
+  });
+});
+
+app.post('/api/ranking/config', (req, res) => {
+  try {
+    const newConfig = { ...rankingConfig, ...req.body };
+    const validation = validateRankingConfig(newConfig);
+    if (!validation.isValid) {
+      return res.status(400).json({ error: 'Invalid ranking configuration', details: validation.errors });
+    }
+    rankingConfig = newConfig;
+    writeJsonFile(RANKING_CONFIG_FILE, rankingConfig);
+
+    // Recompute latest ranking metrics with new config
+    const selection = selectDailyEdition(allStories, new Date(), rankingConfig);
+    latestRankingMetrics = calculateRankingMetrics(selection, allStories.length, rankingConfig);
+    writeJsonFile(RANKING_METRICS_FILE, latestRankingMetrics);
+
+    res.json({ success: true, config: rankingConfig, metrics: latestRankingMetrics });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to update ranking config', message: err.message });
+  }
 });
 
 // Cadence Configuration & Single-Click Restore API Endpoints
