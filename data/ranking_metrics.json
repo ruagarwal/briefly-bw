@@ -1,0 +1,89 @@
+{
+  "editionAsOf": "2026-10-30T08:30:32.034Z",
+  "configVersion": "1.0",
+  "candidatesTotal": 10,
+  "candidatesEligible": 10,
+  "selectedCount": 10,
+  "distinctCountriesCount": 9,
+  "countryDistribution": {
+    "Germany": 1,
+    "Bulgaria": 1,
+    "Sweden": 1,
+    "Lithuania": 1,
+    "Italy": 1,
+    "United Kingdom": 1,
+    "Ireland": 1,
+    "Austria": 1,
+    "Pan-European": 2
+  },
+  "countryShareTop3": [
+    {
+      "country": "Pan-European",
+      "sharePercent": 20
+    },
+    {
+      "country": "Germany",
+      "sharePercent": 10
+    },
+    {
+      "country": "Bulgaria",
+      "sharePercent": 10
+    }
+  ],
+  "sourceDistribution": {
+    "EU-Startups": 2,
+    "The Recursive": 2,
+    "Breakit": 1,
+    "Tech.eu": 2,
+    "Silicon Republic": 1,
+    "Trending Topics": 1,
+    "Sifted": 1
+  },
+  "sourceShareTop3": [
+    {
+      "source": "EU-Startups",
+      "sharePercent": 20
+    },
+    {
+      "source": "The Recursive",
+      "sharePercent": 20
+    },
+    {
+      "source": "Tech.eu",
+      "sharePercent": 20
+    }
+  ],
+  "topicDistribution": {
+    "SaaS & B2B": 1,
+    "Funding & Deals": 2,
+    "M&A & Exits": 1,
+    "AI & DeepTech": 2,
+    "HealthTech & Bio": 1,
+    "Policy & Ecosystem": 3
+  },
+  "largestTopicSharePercent": 30,
+  "eventTypeDistribution": {
+    "commercial_deployment": 2,
+    "funding": 6,
+    "restructuring": 1,
+    "general_development": 1
+  },
+  "crossBorderCount": 2,
+  "freshnessDistribution": {
+    "under3h": 2,
+    "under6h": 4,
+    "under12h": 4,
+    "under24h": 0,
+    "over24h": 0
+  },
+  "provenanceDistribution": {
+    "original_reporting": 10,
+    "independently_corroborated": 0,
+    "primary_announcement": 0,
+    "ecosystem_listing": 0,
+    "developing_unverified": 0
+  },
+  "qualityGateExclusions": [],
+  "softCapRelaxations": [],
+  "averageIntrinsicScore": 63.9
+}
