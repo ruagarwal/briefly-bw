@@ -7,10 +7,13 @@
   "sourceClicks": 0,
   "saves": 0,
   "shares": 0,
-  "sessionDurationsSec": [],
+  "sessionDurationsSec": [
+    158,
+    211
+  ],
   "dwellTimesMs": [],
   "readerCountries": {},
   "feedLoadFailures": 0,
-  "clientCrashes": 0,
+  "clientCrashes": 1,
   "slowLoadWarnings": 0
 }
