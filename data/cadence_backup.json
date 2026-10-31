@@ -1,0 +1,16 @@
+{
+  "mode": "legacy-daily",
+  "editionTimes": [
+    {
+      "name": "Daily 03:00 GMT Edition",
+      "timeStr": "03:00",
+      "hour": 3,
+      "minute": 0
+    }
+  ],
+  "activeShelfLifeHours": 168,
+  "ingestionScanWindowHours": 48,
+  "dbRetentionDays": 7,
+  "enableMilestoneCard": false,
+  "milestonePosition": 0
+}

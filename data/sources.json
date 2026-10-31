@@ -145,8 +145,7 @@
     "sourceRole": "EU technology policy, AI Act, and regulation",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 403"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "silicon-canals",
@@ -193,8 +192,7 @@
     "priority": "core",
     "errorCount": 1,
     "ingestionMethod": "RSS",
-    "notes": "Premier Swedish startup and VC publication.",
-    "lastError": "HTTP 404"
+    "notes": "Premier Swedish startup and VC publication."
   },
   {
     "id": "di-digital-se",
@@ -215,8 +213,7 @@
     "sourceRole": "Business/context newsroom (Sweden)",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 404"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "arctic-startup",
@@ -261,8 +258,7 @@
     "sourceRole": "Core local startup newsroom (Norway)",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 404"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "techsavvy-dk",
@@ -473,8 +469,7 @@
     "sourceRole": "Core ecosystem source (Switzerland)",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 404"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "maddyness-fr",
@@ -518,8 +513,7 @@
     "sourceRole": "Specialist newsroom (France)",
     "priority": "secondary",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 404"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "mt-sprout-nl",
@@ -611,8 +605,7 @@
     "sourceRole": "Core startup newsroom (Italy)",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 403"
+    "ingestionMethod": "RSS"
   },
   {
     "id": "el-referente-es",
@@ -958,7 +951,6 @@
     "sourceRole": "Primary source: Deeptech funding & accelerator awards",
     "priority": "core",
     "errorCount": 1,
-    "ingestionMethod": "RSS",
-    "lastError": "HTTP 404"
+    "ingestionMethod": "RSS"
   }
 ]
