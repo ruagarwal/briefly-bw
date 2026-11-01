@@ -1,7 +1,15 @@
 {
   "totalSessions": 0,
   "dailyActiveUsers": {},
-  "cardViewsByIndex": {},
+  "cardViewsByIndex": {
+    "0": 2,
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 2,
+    "5": 2,
+    "6": 1
+  },
   "feedCompletions": 0,
   "quickBounces": 0,
   "sourceClicks": 0,
@@ -9,9 +17,25 @@
   "shares": 0,
   "sessionDurationsSec": [
     158,
-    211
+    211,
+    2257,
+    2260
   ],
-  "dwellTimesMs": [],
+  "dwellTimesMs": [
+    6032,
+    1517,
+    366,
+    2932,
+    6002,
+    1950,
+    266,
+    1285,
+    332,
+    299,
+    267,
+    835,
+    348
+  ],
   "readerCountries": {},
   "feedLoadFailures": 0,
   "clientCrashes": 1,

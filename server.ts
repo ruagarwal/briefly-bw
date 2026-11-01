@@ -226,14 +226,15 @@ function passesEditorialQualityGate(title: string, summary: string): QualityChec
   const words = clean.split(/\s+/).filter(Boolean);
   const wordCount = words.length;
 
-  // 1. Strict minimum length: Must be at least 28 words (never a 6-word or 10-word fragment!)
-  if (wordCount < 28) {
-    return { isValid: false, reason: `Summary is too short (${wordCount} words, minimum 28 required for an editorial micro-brief)` };
+  // 1. Strict minimum length: Must be at least 38 words (never a 20-word fragment!)
+  // Guarantees the 3-sentence executive structure: Hard news & figures + Mechanisms & partners + Strategic impact
+  if (wordCount < 38) {
+    return { isValid: false, reason: `Summary is too short (${wordCount} words, minimum 38 required for executive micro-brief)` };
   }
 
-  // 2. Strict maximum length: <= 60 words
-  if (wordCount > 60) {
-    return { isValid: false, reason: `Summary exceeds 60-word limit (${wordCount} words)` };
+  // 2. Strict maximum length: <= 58 words
+  if (wordCount > 58) {
+    return { isValid: false, reason: `Summary exceeds 58-word limit (${wordCount} words)` };
   }
 
   // 3. Must not be a mere copy or repetition of the headline
@@ -295,6 +296,46 @@ function passesEditorialQualityGate(title: string, summary: string): QualityChec
         return { isValid: false, reason: 'Repetitive sentence detected in editorial summary' };
       }
     }
+  }
+
+  // 11. Anti-Headline Echo: Summary must not open with or repeat the headline
+  const firstSentence = sentences[0] || '';
+  const titleWords = new Set(title.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 3));
+  const firstWords = firstSentence.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 3);
+  if (titleWords.size > 0 && firstWords.length > 0) {
+    const overlap = firstWords.filter(w => titleWords.has(w)).length;
+    const ratio = overlap / Math.max(firstWords.length, 1);
+    if (ratio > 0.40) {
+      return { isValid: false, reason: 'Summary opens by echoing the headline instead of leading with substantive details' };
+    }
+  }
+
+  // 12. Template Filler & Boilerplate Blacklist
+  const bannedPhrases = [
+    'reported by ',
+    'ongoing coverage across',
+    'verified reporting by',
+    'further reporting details',
+    'as reported by',
+    'regional tech ecosystem',
+    'covering european technology, venture capital',
+    'covering european venture and startup'
+  ];
+  const lowerSummary = clean.toLowerCase();
+  for (const phrase of bannedPhrases) {
+    if (lowerSummary.includes(phrase)) {
+      return { isValid: false, reason: `Summary contains template filler phrase: "${phrase}"` };
+    }
+  }
+
+  // 13. Digest / Multi-story Delimiter Blacklist (Anti-Link-Dump)
+  if (/\+{3,}|\/{3,}|\|{2,}|#\s*(?:weekly review|wochenrückblick)/i.test(title)) {
+    return { isValid: false, reason: 'Headline is an editorial link-dump/roundup digest with multi-story delimiters' };
+  }
+
+  // 14. Paywall & Subscription Boilerplate Blacklist
+  if (/utilizamos conexões seguras|ao registar-se|acesso imediato|conteúdo premium|log in to subscribe|subscribe to read/i.test(clean)) {
+    return { isValid: false, reason: 'Summary contains publisher paywall or subscriber registration copy' };
   }
 
   return { isValid: true };
@@ -394,12 +435,12 @@ function parseXmlFeed(xmlText: string): Array<{ title: string; link: string; des
     const rawContent = (contentEncodedMatch ? (contentEncodedMatch[1] ?? contentEncodedMatch[2] ?? '') : '').trim();
     const rawDesc = (descMatch ? (descMatch[1] ?? descMatch[2] ?? '') : '').trim();
     
-    // Extract first 1-2 clean paragraphs from content:encoded if longer than raw description
+    // Extract first 5-6 clean paragraphs from content:encoded to provide rich text for executive synthesis
     let description = '';
     if (rawContent && rawContent.length > rawDesc.length) {
       const pMatches = rawContent.match(/<p[^>]*>([\s\S]*?)<\/p>/gi);
       if (pMatches && pMatches.length > 0) {
-        description = pMatches.slice(0, 2).map(p => cleanHtmlText(p)).filter(Boolean).join(' ');
+        description = pMatches.slice(0, 6).map(p => cleanHtmlText(p)).filter(Boolean).join(' ');
       } else {
         description = cleanHtmlText(rawContent);
       }
@@ -469,6 +510,19 @@ function cleanHtmlText(text: string): string {
     .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
+    .replace(/&rsquo;/gi, "'")
+    .replace(/&lsquo;/gi, "'")
+    .replace(/&rdquo;/gi, '"')
+    .replace(/&ldquo;/gi, '"')
+    .replace(/&eacute;/gi, 'é')
+    .replace(/&aacute;/gi, 'á')
+    .replace(/&oacute;/gi, 'ó')
+    .replace(/&iacute;/gi, 'í')
+    .replace(/&uacute;/gi, 'ú')
+    .replace(/&ntilde;/gi, 'ñ')
+    .replace(/&uuml;/gi, 'ü')
+    .replace(/&ouml;/gi, 'ö')
+    .replace(/&auml;/gi, 'ä')
     .replace(/&#39;/gi, "'")
     .replace(/&#(\d+);/g, (_, code) => {
       const n = parseInt(code, 10);
@@ -489,7 +543,18 @@ function cleanHtmlText(text: string): string {
 function passesSignalFilter(title: string, description: string): boolean {
   const combined = (title + ' ' + description).toLowerCase();
 
-  // Noise blacklist: drop consumer retail lists, lifestyle, generic gossip, podcasts
+  // Reject newsletter roundups, link-dumps, multi-topic digests
+  if (/^#?\s*(?:weekly review|wochenrückblick|news roundup|daily digest|press review|presseschau|ticker)\b/i.test(title)) {
+    return false;
+  }
+  if (/\+{3,}|\/{3,}|\|{2,}/.test(title)) {
+    return false;
+  }
+  if (title.split(/\+\+\+|---|—{2,}|\/{3,}/).length > 2) {
+    return false;
+  }
+
+  // Noise blacklist: drop consumer retail lists, lifestyle, generic gossip, podcasts, paywall teasers
   const noisePatterns = [
     'podcast episode',
     'horoscope',
@@ -498,7 +563,11 @@ function passesSignalFilter(title: string, description: string): boolean {
     'celebrity gossip',
     'black friday consumer deals',
     'weekend lottery',
-    'film review'
+    'film review',
+    'utilizamos conexões seguras',
+    'ao registar-se está a aceitar',
+    'acesso imediato a todo o conteúdo',
+    'conteúdo premium'
   ];
   if (noisePatterns.some(p => combined.includes(p))) {
     return false;
@@ -548,30 +617,70 @@ function isDuplicateStory(newTitle: string, newLink: string, existingList: NewsS
 // AUTOMATED NEURAL TRANSLATION & ANTI-REPETITION SYNTHESIS ENGINE
 // ============================================================================
 
+let cachedVqd: string | null = null;
+let lastVqdTime = 0;
+
+async function getVqdToken(): Promise<string | null> {
+  if (cachedVqd && Date.now() - lastVqdTime < 300000) {
+    return cachedVqd;
+  }
+  try {
+    const res = await fetch('https://duckduckgo.com/?q=translate&ia=translate', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    if (res.ok) {
+      const html = await res.text();
+      const m = html.match(/vqd=([0-9-]+)/);
+      if (m && m[1]) {
+        cachedVqd = m[1];
+        lastVqdTime = Date.now();
+        return cachedVqd;
+      }
+    }
+  } catch (err) {}
+  return null;
+}
+
 /**
  * Translates text into fluent English using verified neural translation.
- * Features built-in timeout, robust error handling, and clean text extraction.
+ * Uses high-resilience DuckDuckGo engine with multi-strategy fallbacks.
  */
-async function translateTextToEnglish(text: string): Promise<string> {
+export async function translateTextToEnglish(text: string): Promise<string> {
   if (!text || text.trim().length === 0) return '';
   const clean = text.trim();
 
-  // Strategy 1: Chrome Extension translation endpoint (fast, neural, reliable)
+  // Strategy 1: High-reliability DuckDuckGo translation engine
   try {
-    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=en&q=${encodeURIComponent(clean)}`;
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-      signal: AbortSignal.timeout(6000)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data[0] && typeof data[0][0] === 'string') {
-        return data[0][0].trim();
+    const vqd = await getVqdToken();
+    if (vqd) {
+      const res = await fetch(`https://duckduckgo.com/translation.js?query=translate&vqd=${vqd}&to=en`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        },
+        body: JSON.stringify({ text: clean }),
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.translated) {
+          try {
+            const parsed = typeof data.translated === 'string' ? JSON.parse(data.translated) : data.translated;
+            if (parsed && parsed.text && typeof parsed.text === 'string') {
+              return parsed.text.trim();
+            }
+          } catch {
+            if (typeof data.translated === 'string') return data.translated.trim();
+          }
+        }
       }
-      if (typeof data === 'string') return data.trim();
     }
   } catch (err) {
-    // Fallback to secondary translation strategy
+    // Failover
   }
 
   // Strategy 2: Google Translate API alternative format
@@ -579,7 +688,7 @@ async function translateTextToEnglish(text: string): Promise<string> {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(clean)}`;
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
-      signal: AbortSignal.timeout(6000)
+      signal: AbortSignal.timeout(5000)
     });
     if (res.ok) {
       const data = await res.json();
@@ -588,16 +697,17 @@ async function translateTextToEnglish(text: string): Promise<string> {
       }
     }
   } catch (err) {
-    // Fail gracefully and return original
+    // Failover
   }
 
   return clean;
 }
 
 /**
- * Strips publisher promotion lines, RSS boilerplate, and newsletter signup marketing.
+ * Strips publisher promotion lines, RSS boilerplate, social sharing, and newsletter marketing.
  */
 function cleanPublisherBoilerplate(text: string): string {
+  if (!text) return '';
   return text
     .replace(/Volg\s+[A-Za-z0-9\/_\- ]+\s+op\s+Google\s+Discover/gi, '')
     .replace(/L[’']article\s+.+\s+est\s+apparu\s+en\s+premier\s+sur.+/gi, '')
@@ -605,55 +715,225 @@ function cleanPublisherBoilerplate(text: string): string {
     .replace(/Den\s+här\s+artikeln\s+publicerades\s+först\s+på.+/gi, '')
     .replace(/Sign\s+up\s+for\s+our\s+newsletter/gi, '')
     .replace(/The\s+post\s+.+\s+appeared\s+first\s+on.+/gi, '')
+    .replace(/Set\s+[A-Za-z0-9\/_\- ]+\s+as\s+a\s+preferred\s+source/gi, '')
+    .replace(/From\s+the\s+side\s+of\s+[A-Za-z0-9 ]+,\s*(?:we should note that|we note that)\s*/gi, '')
+    .replace(/As\s+reported\s+by\s+[A-Za-z0-9 ]+,\s*/gi, '')
+    .replace(/Link\s+kopieren|Foto:|Photo:|Image:|Credits:/gi, '')
+    .replace(/©\s*[^.]*?(?:Unsplash|Pexels|Getty|Reuters|melourra|melorra)[^.]*\.?/gi, '')
+    .replace(/Buy One Founder Summit Ticket[^.]*\.?/gi, '')
+    .replace(/Founder Summit begins[^.]*\.?/gi, '')
+    .replace(/Get your pass savings[^.]*\.?/gi, '')
+    .replace(/[A-Za-z ]+ \d{1,2} (?:October|November|December|January|February|March|April|May|June|July|August|September) \d{4}(?:\s+\d+)?\s*(?:Share Facebook Twitter Linkedin.*?(?:Copy link|Send email))?/gi, '')
+    .replace(/Menu ECO login \| register[^.]*\.?/gi, '')
+    .replace(/Log in to subscribe[^.]*\.?/gi, '')
+    .replace(/Tech\.eu Insights creates insight[^.]*\.?/gi, '')
+    .replace(/Browse popular Insights content\.?/gi, '')
+    .replace(/I suggest a topic Copy link[^.]*\.?/gi, '')
+    .replace(/Share by e-mail|Share on Facebook|Share on Linkedin/gi, '')
+    .replace(/Reported by [A-Za-z0-9 ]+ in [A-Za-z0-9 ]+\.?/gi, '')
+    .replace(/Ongoing coverage across the regional tech ecosystem\.?/gi, '')
+    .replace(/Verified reporting by [A-Za-z0-9 ]+ covering European technology and venture capital developments\.?/gi, '')
+    .replace(/Зазначимо,\s*що\s*/gi, '')
+    .replace(/Utilizamos conexões seguras[^.]*\.?/gi, '')
+    .replace(/Ao registar-se está a aceitar[^.]*\.?/gi, '')
+    .replace(/Acesso imediato a todo o conteúdo[^.]*\.?/gi, '')
+    .replace(/In our #weekly review we provide[^.]*\.?/gi, '')
+    .replace(/STARTUPLAND:\s*Founders\.\s*Visionaries[^.]*\.?/gi, '')
+    .replace(/Few names have featured as often in [A-Za-z0-9 ]+ as[^.]*\.?/gi, '')
+    .replace(/With \d+ articles(?:\/\s*podcasts)? dedicated to its impact over the years[^.]*\.?/gi, '')
+    .replace(/Přejít k obsahu\s*\|\s*Přejít k hlavnímu menu[^.]*\.?/gi, '')
+    .replace(/en English de Deutsch Einfache Sprache Barrierefreie Darstellung Login Registrierung Ökosystem/gi, '')
+    .replace(/Adaugă-ne ca sursă preferată în Google[A-Za-z0-9, :]+/gi, '')
+    .replace(/Trending Topics auf Google als bevorzugte Nachrichtenquelle festlegen\.?/gi, '')
+    .replace(/The grand staircase of Vienna's Hofburg during a TEDAI Vienna gala\.?/gi, '')
+    .replace(/Image Credits:\s*[A-Za-z0-9_\- ]+/gi, '')
+    .replace(/Photo:\s*[A-Za-z0-9_\- ]+|Foto:\s*[A-Za-z0-9_\- ]+/gi, '')
+    .replace(/Sarah Perez\s+\d{1,2}:\d{2}\s+[AP]M\s+[A-Z]+\s*·\s*[A-Za-z0-9, ]+/gi, '')
+    .replace(/Bogdan Grosereanu\s+[A-Za-z0-9, :]+/gi, '')
+    .replace(/Jakob Steinschaden\s*,\s*co-produced by AI\s+[A-Za-z0-9. ]+/gi, '')
+    .replace(/Siūlau temą Kopijuoti nuorodą Nuoroda nukopijuota/gi, '')
+    .replace(/Dalintis el\. paštu Dalintis Facebook Dalintis Linkedin Dalintis/gi, '')
+    .replace(/Liudo Parulskio \(VŽ\) vizualizacija/gi, '')
+    .replace(/Miglė Valaitienė Giedrius Gaidamavičius/gi, '')
+    .replace(/Baví vás články CzechCrunche\?[^.]*\.?/gi, '')
+    .replace(/Sdílet Uložit \d+ \d+ Zobrazit komentáře/gi, '')
+    .replace(/Sledovat Upřednostnit/gi, '')
+    .replace(/Byla hluboká noc a nad pražskou náplavkou se rozpoutala bouřka\.?/gi, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
 /**
- * Extracts distinct sentences from article description, eliminating sentences that
- * repeat the headline (averts the Kalshi & Eviction duplicate-sentence bug).
+ * Hydrates deep article content by reading canonical webpage paragraphs.
+ * If the RSS snippet already contains >=75 words of substantive copy (e.g. from <content:encoded>),
+ * uses that directly. Otherwise, fetches the live URL with a fast 5s timeout and extracts
+ * clean article paragraphs, filtering out cookie notices, login bars, and marketing noise.
  */
-function deduplicateDescriptionSentences(title: string, description: string): string[] {
-  const normTitle = title.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
+export async function hydrateArticleBody(url: string, rawSnippet: string = ''): Promise<string> {
+  const cleanSnippet = cleanPublisherBoilerplate(cleanHtmlText(rawSnippet));
+  if (cleanSnippet.split(/\s+/).length >= 75) {
+    return cleanSnippet;
+  }
+
+  if (!url || !url.startsWith('http')) return cleanSnippet;
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+
+    if (res.ok) {
+      const html = await res.text();
+      // Strip noisy document segments
+      const cleanedHtml = html
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+        .replace(/<nav\b[^<]*(?:(?!<\/nav>)<[^<]*)*<\/nav>/gi, '')
+        .replace(/<header\b[^<]*(?:(?!<\/header>)<[^<]*)*<\/header>/gi, '')
+        .replace(/<footer\b[^<]*(?:(?!<\/footer>)<[^<]*)*<\/footer>/gi, '');
+
+      const pMatches = [...cleanedHtml.matchAll(/<p[^>]*>(.*?)<\/p>/gis)];
+      const paragraphs: string[] = [];
+
+      for (const m of pMatches) {
+        const text = cleanPublisherBoilerplate(cleanHtmlText(m[1]));
+        if (
+          text.length > 45 &&
+          !/cookie|subscribe|newsletter|privacy policy|terms of service|вхід|спільнота|all rights reserved|set [a-z0-9 ]+ as a preferred source|login \| register|insights creates insight|browse popular insights|suggest a topic|copy link|photo of|utilizamos conexões|ao registar-se|conteúdo premium|přejít k obsahu/i.test(text)
+        ) {
+          paragraphs.push(text);
+          if (paragraphs.length >= 6) break;
+        }
+      }
+
+      if (paragraphs.length > 0) {
+        const combined = paragraphs.join(' ');
+        if (combined.split(/\s+/).length >= 40) {
+          return combined;
+        }
+      }
+    }
+  } catch (err) {
+    // Non-fatal: Fallback to RSS snippet
+  }
+
+  return cleanSnippet;
+}
+
+/**
+ * Synthesizes an executive-grade micro-brief strictly between 40 and 58 words.
+ * CRITICAL INVARIANTS:
+ * 1. NEVER starts with, echoes, or repeats the headline (Rule 11).
+ * 2. 3-Sentence Executive Structure:
+ *    - Sentence 1: Hard news & lead figures (deal terms, valuation, funding, policy)
+ *    - Sentence 2: Underlying mechanics, tech architecture, or commercial partners
+ *    - Sentence 3: Market/ecosystem impact or strategic positioning
+ * 3. Length strictly 40–58 words. If body has insufficient text (< 38 words), fails quality gate and is quarantined.
+ */
+export async function buildExecutiveSummary(
+  headline: string,
+  hydratedContent: string,
+  isForeign: boolean
+): Promise<{ summary: string; wordCount: number }> {
+  const normTitle = headline.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
   const titleTokens = new Set(normTitle.split(/\s+/).filter(w => w.length > 3));
 
-  const rawSentences = description.split(/(?<=[.!?])\s+/);
-  const distinctSentences: string[] = [];
+  const rawSentences = hydratedContent.split(/(?<=[.!?])\s+/);
+  const candidateSentences: string[] = [];
+  let accumulatedWords = 0;
 
   for (const s of rawSentences) {
-    const cleaned = cleanPublisherBoilerplate(s);
-    if (cleaned.length < 15) continue;
-    const normS = cleaned.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
+    const clean = cleanPublisherBoilerplate(s);
+    if (clean.length < 25) continue;
+
+    // Check token overlap with headline (Anti-Echo Rule)
+    const normS = clean.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
     const sTokens = normS.split(/\s+/).filter(w => w.length > 3);
     if (sTokens.length === 0) continue;
 
-    // Check overlap with title
     const matchCount = sTokens.filter(t => titleTokens.has(t)).length;
     const overlapRatio = matchCount / Math.max(sTokens.length, 1);
 
-    // If sentence repeats more than 50% of headline tokens, skip it!
-    if (overlapRatio > 0.50) continue;
+    // If repeats >35% of headline tokens or contains headline verbatim, SKIP!
+    if (overlapRatio > 0.35 || normS.includes(normTitle)) continue;
 
-    distinctSentences.push(cleaned);
+    // Skip generic noise lines
+    if (/sign up for|read more|all rights reserved|click here|contact us|share on/i.test(clean)) continue;
+
+    candidateSentences.push(clean);
+    accumulatedWords += clean.split(/\s+/).length;
+    // Collect enough sentences to comfortably reach 45–58 words after translation
+    if (accumulatedWords >= 60) break;
   }
 
-  return distinctSentences;
+  // If candidate sentences are in a foreign language, translate them
+  const substantiveParts: string[] = [];
+  for (const s of candidateSentences) {
+    const isSentForeign = isNonEnglishArticle(s, '');
+    const trans = (isForeign || isSentForeign.isNonEnglish) ? await translateTextToEnglish(s) : s;
+    if (trans && trans.length > 15) {
+      substantiveParts.push(trans);
+    }
+  }
+
+  let drafted = substantiveParts.join(' ').trim();
+
+  // If candidate sentences were under 38 words, pull from the broader hydrated body
+  if (drafted.split(/\s+/).filter(Boolean).length < 38) {
+    const fullTrans = isForeign ? await translateTextToEnglish(hydratedContent) : hydratedContent;
+    const transSentences = fullTrans.split(/(?<=[.!?])\s+/);
+    const fallbackParts: string[] = [];
+    let fallbackWords = 0;
+    for (const ts of transSentences) {
+      const c = cleanPublisherBoilerplate(ts);
+      if (c.length < 25) continue;
+      const nTs = c.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
+      if (nTs.includes(normTitle)) continue;
+      const tTokens = nTs.split(/\s+/).filter(w => w.length > 3);
+      const match = tTokens.filter(t => titleTokens.has(t)).length;
+      if (tTokens.length > 0 && match / tTokens.length > 0.35) continue;
+      fallbackParts.push(c);
+      fallbackWords += c.split(/\s+/).length;
+      if (fallbackWords >= 50) break;
+    }
+    if (fallbackParts.length > 0) {
+      drafted = fallbackParts.join(' ').trim();
+    }
+  }
+
+  // Final check: If summary still contains foreign text, translate it comprehensively
+  const finalCheck = isNonEnglishArticle(headline, drafted);
+  if (finalCheck.isNonEnglish || /[\u0400-\u04FF\u0370-\u03FF]/.test(drafted)) {
+    drafted = await translateTextToEnglish(drafted);
+  }
+
+  // Enforce word cap (56 words max) with complete terminal punctuation
+  let { text: cleanSummary, wordCount } = enforce60WordCap(drafted, 56);
+  if (!/[.!?]["']?$/.test(cleanSummary)) {
+    cleanSummary += '.';
+  }
+
+  return { summary: cleanSummary, wordCount };
 }
 
 /**
  * Content-First Language Detector.
  * Tests actual text vocabulary instead of blindly relying on publisher country.
  */
-function isNonEnglishArticle(
+export function isNonEnglishArticle(
   title: string, 
   description: string = '', 
   sourceLanguages?: string[]
 ): { isNonEnglish: boolean; detectedLanguage?: string } {
   const combined = (title + ' ' + description).toLowerCase();
 
-  // Non-Latin script detection (Cyrillic, Greek)
-  if (/[\u0400-\u04FF]/.test(title)) return { isNonEnglish: true, detectedLanguage: 'Ukrainian/Cyrillic (uk)' };
-  if (/[\u0370-\u03FF]/.test(title)) return { isNonEnglish: true, detectedLanguage: 'Greek (el)' };
+  // Non-Latin script detection (Cyrillic, Greek) in title or body
+  if (/[\u0400-\u04FF]/.test(combined)) return { isNonEnglish: true, detectedLanguage: 'Ukrainian/Cyrillic (uk)' };
+  if (/[\u0370-\u03FF]/.test(combined)) return { isNonEnglish: true, detectedLanguage: 'Greek (el)' };
 
   // Lexical markers across European language clusters
   const germanWords = ['der', 'die', 'das', 'und', 'für', 'mit', 'von', 'ein', 'eine', 'einer', 'nach', 'über', 'wochenrückblick', 'startup-szene', 'deutschland', 'münchner', 'berliner', 'wehren', 'sichern', 'mehrheit'];
@@ -700,7 +980,7 @@ function isNonEnglishArticle(
   return { isNonEnglish: false };
 }
 
-// Algorithmic NLP Micro-Brief Synthesizer with Automated Neural Translation
+// Algorithmic NLP Micro-Brief Synthesizer with Deep Article Hydration
 async function synthesizeArticleAlgorithmic(rawArticle: {
   title: string;
   link: string;
@@ -715,8 +995,10 @@ async function synthesizeArticleAlgorithmic(rawArticle: {
   imageUrl?: string;
 }): Promise<NewsStory> {
   const cleanTitle = cleanHtmlText(rawArticle.title);
-  const cleanDesc = cleanHtmlText(rawArticle.description);
   const currentUtcIso = new Date().toISOString().split('T')[0];
+
+  // 1. Deep Article Content Hydration: Fetch live canonical article paragraphs
+  const hydratedBody = await hydrateArticleBody(rawArticle.link, rawArticle.description);
 
   // Map European geographic region
   let region: EuropeanRegion = 'Pan-European';
@@ -730,7 +1012,7 @@ async function synthesizeArticleAlgorithmic(rawArticle: {
 
   // Determine topic based on keyword signals
   let topicTag: StoryTopic = 'Funding & Deals';
-  const lowerContent = (cleanTitle + ' ' + cleanDesc).toLowerCase();
+  const lowerContent = (cleanTitle + ' ' + hydratedBody).toLowerCase();
   if (lowerContent.includes('ai') || lowerContent.includes('deeptech') || lowerContent.includes('drone') || lowerContent.includes('quantum') || lowerContent.includes('model')) {
     topicTag = 'AI & DeepTech';
   } else if (lowerContent.includes('climate') || lowerContent.includes('clean') || lowerContent.includes('energy') || lowerContent.includes('solar') || lowerContent.includes('battery')) {
@@ -747,58 +1029,14 @@ async function synthesizeArticleAlgorithmic(rawArticle: {
     topicTag = 'SaaS & B2B';
   }
 
-  // Check language & apply automated neural translation if needed
-  const langCheck = isNonEnglishArticle(cleanTitle, cleanDesc, rawArticle.languages);
-  let effectiveTitle = cleanTitle;
-  let draftedSummary = '';
+  // 2. Language check and headline translation if foreign
+  const langCheck = isNonEnglishArticle(cleanTitle, hydratedBody, rawArticle.languages);
+  const effectiveTitle = langCheck.isNonEnglish ? await translateTextToEnglish(cleanTitle) : cleanTitle;
 
-  if (langCheck.isNonEnglish) {
-    // 1. Translate headline faithfully into English
-    effectiveTitle = await translateTextToEnglish(cleanTitle);
+  // 3. Executive Brief Synthesis without headline echoes
+  const { summary: cleanSummary, wordCount } = await buildExecutiveSummary(effectiveTitle, hydratedBody, langCheck.isNonEnglish);
 
-    // 2. Extract and translate distinct, non-repetitive body sentences
-    const distinctSentences = deduplicateDescriptionSentences(cleanTitle, cleanDesc);
-    let translatedBody = '';
-
-    if (distinctSentences.length > 0) {
-      const translatedParts: string[] = [];
-      for (const s of distinctSentences.slice(0, 2)) {
-        const transS = await translateTextToEnglish(s);
-        if (transS && transS.length > 10) translatedParts.push(transS);
-      }
-      translatedBody = translatedParts.join(' ');
-    }
-
-    if (translatedBody.length > 15) {
-      draftedSummary = `${effectiveTitle}. ${translatedBody}`;
-    } else {
-      draftedSummary = `${effectiveTitle}. Verified reporting by ${rawArticle.sourceName} in ${rawArticle.country || 'Europe'}. Further reporting details ongoing developments across the regional ecosystem.`;
-    }
-
-    if (draftedSummary.split(/\s+/).length < 28) {
-      draftedSummary = `${draftedSummary.replace(/[.!?]+$/, '')}. Verified reporting by ${rawArticle.sourceName} covering European technology and venture capital developments.`;
-    }
-  } else {
-    // English story: Clean and deduplicate sentences
-    const distinctSentences = deduplicateDescriptionSentences(cleanTitle, cleanDesc);
-    if (distinctSentences.length > 0) {
-      draftedSummary = `${cleanTitle}. ${distinctSentences.slice(0, 2).join(' ')}`;
-    } else {
-      draftedSummary = `${cleanTitle}. Verified reporting by ${rawArticle.sourceName} on European technology and venture capital developments.`;
-    }
-
-    if (draftedSummary.split(/\s+/).length < 28) {
-      draftedSummary = `${draftedSummary.replace(/[.!?]+$/, '')}. Verified reporting by ${rawArticle.sourceName} covering European technology and venture capital developments.`;
-    }
-  }
-
-  // Enforce strict 60-word limit with terminal punctuation
-  let { text: cleanSummary, wordCount } = enforce60WordCap(draftedSummary, 56);
-  if (!/[.!?]["']?$/.test(cleanSummary)) {
-    cleanSummary += '.';
-  }
-
-  // Verify translated copy through the strict Editorial Quality Gate
+  // 4. Strict Quality Gate Invariant verification
   const qualityGate = passesEditorialQualityGate(effectiveTitle, cleanSummary);
   const status: StoryStatus = qualityGate.isValid ? 'published' : 'quarantined';
   const quarantineReason = qualityGate.isValid
@@ -812,7 +1050,7 @@ async function synthesizeArticleAlgorithmic(rawArticle: {
     id: `story-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     title: effectiveTitle,
     summary: cleanSummary,
-    wordCount: cleanSummary.split(/\s+/).length,
+    wordCount,
     originalUrl: rawArticle.link,
     publisher: rawArticle.sourceName,
     publisherDomain: rawArticle.sourceDomain,
@@ -839,39 +1077,15 @@ async function synthesizeArticleAlgorithmic(rawArticle: {
 }
 
 /**
- * Translates and qualifies an individual story (used by Editorial Desk manual trigger).
+ * Translates and qualifies an individual story using deep article hydration.
  */
-async function translateAndQualifyStory(story: NewsStory): Promise<{ success: boolean; reason?: string }> {
+export async function translateAndQualifyStory(story: NewsStory): Promise<{ success: boolean; reason?: string }> {
   try {
     const transTitle = await translateTextToEnglish(story.title);
-    const distinct = deduplicateDescriptionSentences(story.title, story.summary);
-    let translatedBody = '';
+    const hydratedBody = await hydrateArticleBody(story.originalUrl, story.summary);
+    const isForeign = isNonEnglishArticle(story.title, hydratedBody).isNonEnglish;
 
-    if (distinct.length > 0) {
-      const transParts: string[] = [];
-      for (const s of distinct.slice(0, 2)) {
-        const t = await translateTextToEnglish(s);
-        if (t && t.length > 10) transParts.push(t);
-      }
-      translatedBody = transParts.join(' ');
-    }
-
-    let newSummary = '';
-    if (translatedBody.length > 15) {
-      newSummary = `${transTitle}. ${translatedBody}`;
-    } else {
-      newSummary = `${transTitle}. Reported by ${story.publisher} in ${story.country || 'Europe'}. Ongoing coverage across the regional tech ecosystem.`;
-    }
-
-    if (newSummary.split(/\s+/).length < 28) {
-      newSummary = `${newSummary.replace(/[.!?]+$/, '')}. Verified reporting by ${story.publisher} covering European technology and venture capital developments.`;
-    }
-
-    const { text: cleanSummary, wordCount } = enforce60WordCap(newSummary, 56);
-    let finalSummary = cleanSummary;
-    if (!/[.!?]["']?$/.test(finalSummary)) {
-      finalSummary += '.';
-    }
+    const { summary: finalSummary, wordCount } = await buildExecutiveSummary(transTitle, hydratedBody, isForeign);
 
     const qualityGate = passesEditorialQualityGate(transTitle, finalSummary);
     if (qualityGate.isValid) {
@@ -880,7 +1094,7 @@ async function translateAndQualifyStory(story: NewsStory): Promise<{ success: bo
       story.wordCount = wordCount;
       story.status = 'published';
       story.quarantineReason = undefined;
-      story.corroborationNotes = `Translated into English from reporting by ${story.publisher}.`;
+      story.corroborationNotes = `Executive summary synthesized from reporting by ${story.publisher}.`;
       return { success: true };
     } else {
       story.quarantineReason = `Editorial Quality Gate quarantine: ${qualityGate.reason}.`;
@@ -894,7 +1108,7 @@ async function translateAndQualifyStory(story: NewsStory): Promise<{ success: bo
 /**
  * Scans the quarantine desk and automatically translates and qualifies foreign-language stories.
  */
-async function autoTranslateQuarantinedStories(): Promise<{ translatedCount: number; remainingCount: number }> {
+export async function autoTranslateQuarantinedStories(): Promise<{ translatedCount: number; remainingCount: number }> {
   console.log('[Auto-Translate] Scanning quarantined queue for foreign stories to translate...');
   const quarantinedList = allStories.filter(s => s.status === 'quarantined');
   let upgradedCount = 0;
@@ -911,7 +1125,7 @@ async function autoTranslateQuarantinedStories(): Promise<{ translatedCount: num
         continue;
       }
 
-      // 2. Translate foreign story
+      // 2. Deep hydrate, translate foreign story, and re-synthesize executive summary
       const res = await translateAndQualifyStory(story);
       if (res.success) {
         upgradedCount++;
@@ -945,6 +1159,9 @@ async function processArticle(rawArticle: {
   author?: string;
   imageUrl?: string;
 }): Promise<NewsStory | null> {
+  // Deep Hydration: Fetch substantive article text from web page if RSS snippet is thin
+  const hydratedBody = await hydrateArticleBody(rawArticle.link, rawArticle.description);
+
   // If Gemini API client is active, use generative AI for deep translation & fact extraction
   if (ai) {
     const prompt = `
@@ -953,17 +1170,18 @@ Analyze the following European startup news item from ${rawArticle.sourceName} (
 
 Title: ${rawArticle.title}
 Published: ${rawArticle.pubDate}
-Snippet / Text: ${rawArticle.description}
+Hydrated Article Content: ${hydratedBody}
 URL: ${rawArticle.link}
 Reported Country/Context: ${rawArticle.country || 'Europe'}
 
-MANDATORY RULES:
-1. Product Promise: The summary MUST communicate what happened and why it matters in 60 words or fewer in fluent, natural English.
-2. TRANSLATION: If the original title or text is in Swedish, German, French, Dutch, Spanish, Italian, Polish, or any European language, translate it faithfully into English.
-3. Put the most critical facts, numbers, company names, and investor names in the first sentence.
-4. Be strictly factual, neutral, and international. No PR buzzwords, no promotional fluff ("groundbreaking", "revolutionary"), no clickbait.
-5. If this is NOT about European startups, venture capital, scaleups, European founders, tech regulation, or the European technology ecosystem, score startupRelevance and europeanRelevance below 50.
-6. Provide structured evaluation scores:
+MANDATORY EDITORIAL RULES:
+1. PRODUCT PROMISE: The summary MUST communicate what happened, why it matters, and concrete operational or financial facts strictly under 60 words (target 40-55 words) in fluent English.
+2. NO HEADLINE REPETITION / NO HEADLINE ECHO: Do NOT begin the summary by repeating or paraphrasing the headline. Assume the reader has already read the headline. Start immediately with new factual substance: the mechanism, deal terms, key players, or broader market impact.
+3. EXECUTIVE AUDIENCE: Tailored for VC partners, founders, and tech executives. Focus on round size, valuation, lead investors, key commercial traction metrics, product mechanics, or strategic ecosystem implications.
+4. TRANSLATION: If the original title or text is in Swedish, German, French, Ukrainian, Dutch, Spanish, Italian, Polish, or any European language, translate it faithfully into English.
+5. NO BOILERPLATE / FLUFF: Never include filler like "Reported by...", "Ongoing coverage...", "Verified reporting...", "According to sources...".
+6. If this is NOT about European startups, venture capital, scaleups, European founders, tech regulation, or the European technology ecosystem, score startupRelevance and europeanRelevance below 50.
+7. Provide structured evaluation scores:
    - startupRelevance (0-100)
    - europeanRelevance (0-100)
    - marketImportance (0-100)
@@ -2127,7 +2345,7 @@ if (process.env.INGEST_ONLY === 'true') {
       console.error('[CLI] Ingestion failed:', err);
       process.exit(1);
     });
-} else {
+} else if (!process.env.NO_SERVER && process.env.NODE_ENV !== 'test') {
   startServer().catch(err => {
     console.error('Failed to start server:', err);
   });

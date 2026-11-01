@@ -1,81 +1,78 @@
 {
-  "editionAsOf": "2026-10-31T21:34:57.681Z",
+  "editionAsOf": "2026-11-01T14:05:38.719Z",
   "configVersion": "1.0",
-  "candidatesTotal": 86,
-  "candidatesEligible": 86,
-  "selectedCount": 18,
+  "candidatesTotal": 87,
+  "candidatesEligible": 87,
+  "selectedCount": 20,
   "distinctCountriesCount": 8,
   "countryDistribution": {
-    "Ukraine": 2,
     "Austria": 3,
+    "Ukraine": 2,
+    "Portugal": 4,
+    "Belgium": 2,
     "Germany": 3,
-    "Belgium": 3,
-    "Lithuania": 2,
-    "Greece": 1,
-    "Czechia": 2,
-    "Pan-European": 2
+    "Central & Eastern Europe": 1,
+    "Lithuania": 4,
+    "Poland": 1
   },
   "countryShareTop3": [
     {
+      "country": "Portugal",
+      "sharePercent": 20
+    },
+    {
+      "country": "Lithuania",
+      "sharePercent": 20
+    },
+    {
       "country": "Austria",
-      "sharePercent": 17
-    },
-    {
-      "country": "Germany",
-      "sharePercent": 17
-    },
-    {
-      "country": "Belgium",
-      "sharePercent": 17
+      "sharePercent": 15
     }
   ],
   "sourceDistribution": {
-    "AIN": 2,
     "Trending Topics": 3,
-    "t3n": 2,
-    "Data News": 3,
-    "Verslo žinios": 2,
-    "Startupper": 1,
-    "CzechCrunch": 2,
-    "TechCrunch Europe": 2,
-    "Deutsche Startups": 1
+    "AIN": 2,
+    "ECO Economia Online": 4,
+    "Data News": 2,
+    "t3n": 3,
+    "The Recursive": 1,
+    "Verslo žinios": 4,
+    "MamStartup": 1
   },
   "sourceShareTop3": [
     {
+      "source": "ECO Economia Online",
+      "sharePercent": 20
+    },
+    {
+      "source": "Verslo žinios",
+      "sharePercent": 20
+    },
+    {
       "source": "Trending Topics",
-      "sharePercent": 17
-    },
-    {
-      "source": "Data News",
-      "sharePercent": 17
-    },
-    {
-      "source": "AIN",
-      "sharePercent": 11
+      "sharePercent": 15
     }
   ],
   "topicDistribution": {
-    "AI & DeepTech": 14,
-    "Funding & Deals": 3,
-    "Policy & Ecosystem": 1
+    "AI & DeepTech": 16,
+    "Funding & Deals": 4
   },
-  "largestTopicSharePercent": 78,
+  "largestTopicSharePercent": 80,
   "eventTypeDistribution": {
-    "general_development": 11,
-    "funding": 4,
-    "regulation_policy": 2,
+    "commercial_deployment": 5,
+    "general_development": 14,
     "technical_milestone": 1
   },
-  "crossBorderCount": 2,
+  "crossBorderCount": 0,
   "freshnessDistribution": {
-    "under3h": 1,
-    "under6h": 4,
-    "under12h": 4,
-    "under24h": 9,
+    "under3h": 11,
+    "under6h": 2,
+    "under12h": 2,
+    "under24h": 5,
     "over24h": 0
   },
   "provenanceDistribution": {
-    "original_reporting": 18,
+    "original_reporting": 20,
     "independently_corroborated": 0,
     "primary_announcement": 0,
     "ecosystem_listing": 0,
@@ -83,550 +80,542 @@
   },
   "qualityGateExclusions": [
     {
+      "storyId": "story-1793481628211-ugbl2",
+      "title": "Ollie, a privacy-focused AI assistant, is shutting down",
+      "reason": "Published outside the 24-hour edition window (39.2h ago)",
+      "intrinsicScore": 54.06,
+      "evidenceConfidence": 95,
+      "ageHours": 39.2
+    },
+    {
+      "storyId": "story-1793481628211-csd0w",
+      "title": "Salesforce’s M&A spree continues with a reported $375M deal for defense tech startup Rune",
+      "reason": "Published outside the 24-hour edition window (38.7h ago)",
+      "intrinsicScore": 63.11,
+      "evidenceConfidence": 90,
+      "ageHours": 38.7
+    },
+    {
+      "storyId": "story-1793481628211-883rn",
+      "title": "OpenAI Cuts Funding Round to $20 Billion as A.I. Sector Wobbles",
+      "reason": "Published outside the 24-hour edition window (32.4h ago)",
+      "intrinsicScore": 65.31,
+      "evidenceConfidence": 90,
+      "ageHours": 32.4
+    },
+    {
+      "storyId": "story-1793481628211-qj6z9",
+      "title": "Longevity: From Pseudoscience to Real Biotechnology (Part II)",
+      "reason": "Published outside the 24-hour edition window (31h ago)",
+      "intrinsicScore": 56.51,
+      "evidenceConfidence": 85,
+      "ageHours": 31
+    },
+    {
+      "storyId": "story-1793481628211-p5h9d",
+      "title": "Gigabyte tax: France wants 5.5 euro cents per GB, VLC sounds the alarm",
+      "reason": "Published outside the 24-hour edition window (30.4h ago)",
+      "intrinsicScore": 52.1,
+      "evidenceConfidence": 85,
+      "ageHours": 30.4
+    },
+    {
+      "storyId": "story-1793481628210-5u6gh",
+      "title": "France Moves to Tax Every Gigabyte at 5.5 Euro Cents, Alarming VLC",
+      "reason": "Published outside the 24-hour edition window (30.4h ago)",
+      "intrinsicScore": 55.1,
+      "evidenceConfidence": 90,
+      "ageHours": 30.4
+    },
+    {
+      "storyId": "story-1793481628210-jtvze",
+      "title": "How long will it take for the US to supply Ukraine with 500 Patriot missiles for $2.1 billion?",
+      "reason": "Published outside the 24-hour edition window (30.3h ago)",
+      "intrinsicScore": 65.1,
+      "evidenceConfidence": 85,
+      "ageHours": 30.3
+    },
+    {
+      "storyId": "story-1793481628210-ziyx5",
+      "title": "#Weekly Review - +++ Distalmotion +++ StrollMe +++ Tendos +++ hansetherm +++ Roadsurfer +++ Gauss Robotics +++",
+      "reason": "Published outside the 24-hour edition window (29.1h ago)",
+      "intrinsicScore": 56.79,
+      "evidenceConfidence": 85,
+      "ageHours": 29.1
+    },
+    {
+      "storyId": "story-1793481628209-ytyn4",
+      "title": "The seven-seat BMW is no longer a Bavarian as you know it. But it has a great new display and the ride is still amazing",
+      "reason": "Published outside the 24-hour edition window (29.5h ago)",
+      "intrinsicScore": 52.73,
+      "evidenceConfidence": 85,
+      "ageHours": 29.5
+    },
+    {
+      "storyId": "story-1793481628209-92job",
+      "title": "Will the next world war be fought on a chip?",
+      "reason": "Published outside the 24-hour edition window (24.1h ago)",
+      "intrinsicScore": 59.99,
+      "evidenceConfidence": 85,
+      "ageHours": 24.1
+    },
+    {
+      "storyId": "story-1793481628209-c50uk",
+      "title": "\"After the war, hundreds of thousands of defense companies will remain\": Roman Sulzhik - on the growth of investments and the future of the defense market",
+      "reason": "Published outside the 24-hour edition window (24.9h ago)",
+      "intrinsicScore": 62.07,
+      "evidenceConfidence": 85,
+      "ageHours": 24.9
+    },
+    {
+      "storyId": "story-1793481628208-4bopl",
+      "title": "The hand-drawn animation took sixteen years to create. Critics love it, audiences see it as a rebellion against AI",
+      "reason": "Published outside the 24-hour edition window (24.1h ago)",
+      "intrinsicScore": 53.74,
+      "evidenceConfidence": 85,
+      "ageHours": 24.1
+    },
+    {
       "storyId": "story-1793389829708-wg3hb",
       "title": "Training management software: 6 solutions compared on their AI innovations actually available",
-      "reason": "Published outside the 24-hour edition window (35.2h ago)",
-      "intrinsicScore": 51.97,
+      "reason": "Published outside the 24-hour edition window (51.7h ago)",
+      "intrinsicScore": 50.77,
       "evidenceConfidence": 85,
-      "ageHours": 35.2
+      "ageHours": 51.7
     },
     {
       "storyId": "story-1793389829720-5uypy",
       "title": "Ralf Dümmel and Frank Thelen secure a DHDL deal with Fryzza – this is what happened after the broadcast",
-      "reason": "Published outside the 24-hour edition window (35.8h ago)",
-      "intrinsicScore": 51.91,
+      "reason": "Published outside the 24-hour edition window (52.3h ago)",
+      "intrinsicScore": 50.74,
       "evidenceConfidence": 85,
-      "ageHours": 35.8
+      "ageHours": 52.3
     },
     {
       "storyId": "story-1793389829716-wcp1q",
       "title": "#Interview - An AI agent for your own property",
-      "reason": "Published outside the 24-hour edition window (34.7h ago)",
-      "intrinsicScore": 48.03,
+      "reason": "Published outside the 24-hour edition window (51.2h ago)",
+      "intrinsicScore": 46.78,
       "evidenceConfidence": 85,
-      "ageHours": 34.7
+      "ageHours": 51.2
     },
     {
       "storyId": "story-1793389829720-j2q5y",
-      "title": "Between a “daily press report” and a “great opportunity”: That’s what the scene says about the planned AI center in Vienna",
-      "reason": "Published outside the 24-hour edition window (34.6h ago)",
-      "intrinsicScore": 48.04,
-      "evidenceConfidence": 85,
-      "ageHours": 34.6
+      "title": "Vienna plans national AI innovation center to bridge academic research and enterprise tech",
+      "reason": "Published outside the 24-hour edition window (51.1h ago)",
+      "intrinsicScore": 52.28,
+      "evidenceConfidence": 90,
+      "ageHours": 51.1
     },
     {
       "storyId": "story-1793389829759-cobc3",
       "title": "“This is a money printing machine”: Thelen invests in Move2pay at DHDL – but the deal falls through",
-      "reason": "Published outside the 24-hour edition window (35.3h ago)",
-      "intrinsicScore": 47.97,
+      "reason": "Published outside the 24-hour edition window (51.8h ago)",
+      "intrinsicScore": 46.75,
       "evidenceConfidence": 85,
-      "ageHours": 35.3
+      "ageHours": 51.8
     },
     {
       "storyId": "story-1793389829717-l42kk",
-      "title": "Ex-EQT investor Doreen Huber joins Interface Capital with eye for cyber deals amid ‘extremely scary’ AI agent boom",
-      "reason": "Published outside the 24-hour edition window (34.8h ago)",
-      "intrinsicScore": 55.46,
-      "evidenceConfidence": 82,
-      "ageHours": 34.8
+      "title": "Ex-EQT investor Doreen Huber joins Interface Capital to target European cybersecurity deals",
+      "reason": "Published outside the 24-hour edition window (51.3h ago)",
+      "intrinsicScore": 50.98,
+      "evidenceConfidence": 87,
+      "ageHours": 51.3
     },
     {
       "storyId": "story-1793389829706-v6swc",
       "title": "Entourage closes its second fund with capital of EUR 100 million. The goal was exceeded in two weeks",
-      "reason": "Published outside the 24-hour edition window (33.7h ago)",
-      "intrinsicScore": 60.63,
+      "reason": "Published outside the 24-hour edition window (50.2h ago)",
+      "intrinsicScore": 59.33,
       "evidenceConfidence": 85,
-      "ageHours": 33.7
+      "ageHours": 50.2
     },
     {
       "storyId": "story-1793389829758-qo4lg",
       "title": "Roadsurfer becomes an American: US investor takes over majority stake in Munich camper startup",
-      "reason": "Published outside the 24-hour edition window (34.6h ago)",
-      "intrinsicScore": 48.03,
+      "reason": "Published outside the 24-hour edition window (51.1h ago)",
+      "intrinsicScore": 51.78,
       "evidenceConfidence": 85,
-      "ageHours": 34.6
+      "ageHours": 51.1
     },
     {
       "storyId": "story-1793389829762-zorz0",
-      "title": "Must reads week 45: challenger Holie's, Nina.care bankrupt and these are the greatest leadership talents of 2026",
-      "reason": "Published outside the 24-hour edition window (33.6h ago)",
-      "intrinsicScore": 53.91,
-      "evidenceConfidence": 85,
-      "ageHours": 33.6
+      "title": "Dutch ecosystem tracks Nina.care restructuring alongside emerging tech leadership",
+      "reason": "Published outside the 24-hour edition window (50.1h ago)",
+      "intrinsicScore": 51.33,
+      "evidenceConfidence": 90,
+      "ageHours": 50.1
     },
     {
       "storyId": "story-1793389829756-kfkbq",
-      "title": "Silicon Austria Labs is developing a new electric car charger that is just 50 millimeters high",
-      "reason": "Published outside the 24-hour edition window (33.6h ago)",
-      "intrinsicScore": 48.16,
-      "evidenceConfidence": 85,
-      "ageHours": 33.6
+      "title": "Silicon Austria Labs develops ultra-compact 50-millimeter electric vehicle charger",
+      "reason": "Published outside the 24-hour edition window (50.1h ago)",
+      "intrinsicScore": 61.08,
+      "evidenceConfidence": 90,
+      "ageHours": 50.1
     },
     {
       "storyId": "story-1793389829684-tzj3j",
-      "title": "Microfinance To Inclusive Finance: A New Name, A Broader Mission",
-      "reason": "Published outside the 24-hour edition window (33.6h ago)",
-      "intrinsicScore": 52.66,
+      "title": "European Microfinance Platform rebrands as Inclusive Finance to expand fintech remit",
+      "reason": "Published outside the 24-hour edition window (50.1h ago)",
+      "intrinsicScore": 55.08,
       "evidenceConfidence": 90,
-      "ageHours": 33.6
+      "ageHours": 50.1
     },
     {
       "storyId": "story-1793389829710-as55z",
-      "title": "Allox obtains 9.4 million euros from Asabys, the CDTI and the ICF",
-      "reason": "Published outside the 24-hour edition window (32.9h ago)",
-      "intrinsicScore": 56.24,
-      "evidenceConfidence": 85,
-      "ageHours": 32.9
+      "title": "Allox secures €9.4M from Asabys, CDTI, and ICF for targeted cancer therapies",
+      "reason": "Published outside the 24-hour edition window (49.4h ago)",
+      "intrinsicScore": 65.37,
+      "evidenceConfidence": 90,
+      "ageHours": 49.4
     },
     {
       "storyId": "story-1793389829709-q0nir",
       "title": "Madrid's Talky raises €1.5 million to teach AI the unwritten rules of accounting",
-      "reason": "Published outside the 24-hour edition window (32.7h ago)",
-      "intrinsicScore": 58.02,
+      "reason": "Published outside the 24-hour edition window (49.2h ago)",
+      "intrinsicScore": 56.62,
       "evidenceConfidence": 95,
-      "ageHours": 32.7
+      "ageHours": 49.2
     },
     {
       "storyId": "story-1793389829704-k3bfj",
       "title": "#Guest post - The four biggest hurdles for medium-sized AI startups",
-      "reason": "Published outside the 24-hour edition window (32.7h ago)",
-      "intrinsicScore": 52.28,
+      "reason": "Published outside the 24-hour edition window (49.2h ago)",
+      "intrinsicScore": 50.87,
       "evidenceConfidence": 85,
-      "ageHours": 32.7
+      "ageHours": 49.2
     },
     {
       "storyId": "story-1793389829755-4ly6i",
       "title": "Munich merger startups are expanding partnerships with Japan",
-      "reason": "Published outside the 24-hour edition window (32.2h ago)",
-      "intrinsicScore": 56.34,
+      "reason": "Published outside the 24-hour edition window (48.7h ago)",
+      "intrinsicScore": 58.65,
       "evidenceConfidence": 85,
-      "ageHours": 32.2
+      "ageHours": 48.7
     },
     {
       "storyId": "story-1793389829713-eje34",
       "title": "AI race vs. privacy: European ministers to ease rules on AI training",
-      "reason": "Published outside the 24-hour edition window (31.8h ago)",
-      "intrinsicScore": 52.39,
+      "reason": "Published outside the 24-hour edition window (48.4h ago)",
+      "intrinsicScore": 56.67,
       "evidenceConfidence": 85,
-      "ageHours": 31.8
+      "ageHours": 48.4
     },
     {
       "storyId": "story-1793389829707-fh63a",
       "title": "Artificial intelligence-supported health technology startup Midstream Health received $20 million investment",
-      "reason": "Published outside the 24-hour edition window (32.6h ago)",
-      "intrinsicScore": 59.53,
+      "reason": "Published outside the 24-hour edition window (49.1h ago)",
+      "intrinsicScore": 58.14,
       "evidenceConfidence": 85,
-      "ageHours": 32.6
+      "ageHours": 49.1
     },
     {
       "storyId": "story-1793389829721-2q26a",
       "title": "Skip the small talk: Make game-changing connections at TechCrunch Founder Summit with Braindate",
-      "reason": "Published outside the 24-hour edition window (31.6h ago)",
-      "intrinsicScore": 64.41,
+      "reason": "Published outside the 24-hour edition window (48.1h ago)",
+      "intrinsicScore": 62.93,
       "evidenceConfidence": 95,
-      "ageHours": 31.6
+      "ageHours": 48.1
     },
     {
       "storyId": "story-1793389829718-uzh2m",
-      "title": "OptikosPrime partners with RED Driver Training to introduce smartphone-based vision screening to UK learner drivers",
-      "reason": "Published outside the 24-hour edition window (31.6h ago)",
-      "intrinsicScore": 52.93,
+      "title": "OptikosPrime partners with RED Driver Training for smartphone vision diagnostics",
+      "reason": "Published outside the 24-hour edition window (48.1h ago)",
+      "intrinsicScore": 56.43,
       "evidenceConfidence": 90,
-      "ageHours": 31.6
+      "ageHours": 48.1
     },
     {
       "storyId": "story-1793389829714-rkpnr",
       "title": "The biggest games of November: Classics return and the biggest media release in history",
-      "reason": "Published outside the 24-hour edition window (31.2h ago)",
-      "intrinsicScore": 48.48,
+      "reason": "Published outside the 24-hour edition window (47.7h ago)",
+      "intrinsicScore": 46.96,
       "evidenceConfidence": 85,
-      "ageHours": 31.2
+      "ageHours": 47.7
     },
     {
       "storyId": "story-1793389829628-f5y1u",
       "title": "NASA shows cat's head in space: What the nebula formation is all about",
-      "reason": "Published outside the 24-hour edition window (31h ago)",
-      "intrinsicScore": 56.49,
+      "reason": "Published outside the 24-hour edition window (47.5h ago)",
+      "intrinsicScore": 67.46,
       "evidenceConfidence": 85,
-      "ageHours": 31
+      "ageHours": 47.5
     },
     {
       "storyId": "story-1793389829719-47sex",
       "title": "Gdańsk Bay Tech Access Day: startups, investors and industry at one table. One Stop Shop was opened in Gdańsk",
-      "reason": "Published outside the 24-hour edition window (31h ago)",
-      "intrinsicScore": 49.01,
+      "reason": "Published outside the 24-hour edition window (47.5h ago)",
+      "intrinsicScore": 46.96,
       "evidenceConfidence": 85,
-      "ageHours": 31
+      "ageHours": 47.5
     },
     {
       "storyId": "story-1793389829716-rbzkp",
       "title": "Beyond the lab: eight European healthtech scaleups taking on medicine’s biggest challenges",
-      "reason": "Published outside the 24-hour edition window (31.9h ago)",
-      "intrinsicScore": 51.87,
+      "reason": "Published outside the 24-hour edition window (48.4h ago)",
+      "intrinsicScore": 50.42,
       "evidenceConfidence": 95,
-      "ageHours": 31.9
+      "ageHours": 48.4
     },
     {
       "storyId": "story-1793389829710-soiz4",
       "title": "Leader: AI is more than ChatGPT – We need a nuanced debate",
-      "reason": "Published outside the 24-hour edition window (30.6h ago)",
-      "intrinsicScore": 52.57,
+      "reason": "Published outside the 24-hour edition window (47.1h ago)",
+      "intrinsicScore": 50.99,
       "evidenceConfidence": 85,
-      "ageHours": 30.6
-    },
-    {
-      "storyId": "story-1793389829711-s89id",
-      "title": "Artificial Intelligence Agenda #67",
-      "reason": "Published outside the 24-hour edition window (31.6h ago)",
-      "intrinsicScore": 59.92,
-      "evidenceConfidence": 85,
-      "ageHours": 31.6
+      "ageHours": 47.1
     },
     {
       "storyId": "story-1793389749682-gjlvw",
       "title": "Agricultural cooperatives in Romania risk losing EU funds after 2027. Warning regarding the new European budget",
-      "reason": "Published outside the 24-hour edition window (30.5h ago)",
-      "intrinsicScore": 54.83,
+      "reason": "Published outside the 24-hour edition window (47h ago)",
+      "intrinsicScore": 58.99,
       "evidenceConfidence": 85,
-      "ageHours": 30.5
+      "ageHours": 47
     },
     {
       "storyId": "story-1793389749685-9wsvf",
-      "title": "South Korea is betting on startups to secure its future on the global stage",
-      "reason": "Published outside the 24-hour edition window (31.1h ago)",
-      "intrinsicScore": 51.94,
-      "evidenceConfidence": 82,
-      "ageHours": 31.1
+      "title": "South Korea expands European startup cross-investment pacts to accelerate deeptech scaling",
+      "reason": "Published outside the 24-hour edition window (47.6h ago)",
+      "intrinsicScore": 58.91,
+      "evidenceConfidence": 87,
+      "ageHours": 47.6
     },
     {
       "storyId": "story-1793389749688-4by1s",
       "title": "\"The AI ​​is coming hard on us (…) We have a slightly delicate situation.\" How employers see the labor market in Romania recently",
-      "reason": "Published outside the 24-hour edition window (29.9h ago)",
-      "intrinsicScore": 52.67,
+      "reason": "Published outside the 24-hour edition window (46.4h ago)",
+      "intrinsicScore": 51.04,
       "evidenceConfidence": 85,
-      "ageHours": 29.9
+      "ageHours": 46.4
     },
     {
       "storyId": "story-1793389749693-dtzvj",
-      "title": "The Netherlands risks losing its AgriTech crown, warns new report",
-      "reason": "Published outside the 24-hour edition window (29.8h ago)",
-      "intrinsicScore": 48.19,
+      "title": "Netherlands risks losing AgriTech leadership amid regulatory hurdles and funding gaps",
+      "reason": "Published outside the 24-hour edition window (46.3h ago)",
+      "intrinsicScore": 46.54,
       "evidenceConfidence": 95,
-      "ageHours": 29.8
+      "ageHours": 46.3
     },
     {
       "storyId": "story-1793389749627-arr68",
       "title": "For others, a prompt is enough, they shoot frame by frame. Animators Pat and Mat are looking for a way to survive in the age of AI",
-      "reason": "Published outside the 24-hour edition window (30.5h ago)",
-      "intrinsicScore": 52.58,
+      "reason": "Published outside the 24-hour edition window (47h ago)",
+      "intrinsicScore": 50.99,
       "evidenceConfidence": 85,
-      "ageHours": 30.5
-    },
-    {
-      "storyId": "story-1793389749635-5sfbr",
-      "title": "Weekly funding round-up! All of the European startup funding rounds we tracked this week (Oct. 26– Oct. 30)",
-      "reason": "Published outside the 24-hour edition window (29.2h ago)",
-      "intrinsicScore": 48.28,
-      "evidenceConfidence": 95,
-      "ageHours": 29.2
+      "ageHours": 47
     },
     {
       "storyId": "story-1793389749692-nrwug",
       "title": "Startups respond to Britain's budget, Greentech Alliance acquires Intermobility, and Europe’s biggest seed rounds of Q3",
-      "reason": "Published outside the 24-hour edition window (30.2h ago)",
-      "intrinsicScore": 69.88,
-      "evidenceConfidence": 95,
-      "ageHours": 30.2
+      "reason": "Published outside the 24-hour edition window (46.7h ago)",
+      "intrinsicScore": 66.26,
+      "evidenceConfidence": 90,
+      "ageHours": 46.7
     },
     {
       "storyId": "story-1793389749690-uam4n",
       "title": "Spooky science: How your brain conjures up night-time scares",
-      "reason": "Published outside the 24-hour edition window (30.1h ago)",
-      "intrinsicScore": 53.64,
-      "evidenceConfidence": 95,
-      "ageHours": 30.1
+      "reason": "Published outside the 24-hour edition window (46.6h ago)",
+      "intrinsicScore": 51.52,
+      "evidenceConfidence": 90,
+      "ageHours": 46.6
     },
     {
       "storyId": "story-1793389749634-esr28",
       "title": "Ireland joins European Lab for Learning and Intelligent Systems network",
-      "reason": "Published outside the 24-hour edition window (29.9h ago)",
-      "intrinsicScore": 56.97,
+      "reason": "Published outside the 24-hour edition window (46.4h ago)",
+      "intrinsicScore": 55.32,
       "evidenceConfidence": 90,
-      "ageHours": 29.9
+      "ageHours": 46.4
     },
     {
       "storyId": "story-1793389749624-38kso",
-      "title": "French Tech: AI accounts for more than 90% of the 41 million euros raised this week",
-      "reason": "Published outside the 24-hour edition window (29.4h ago)",
-      "intrinsicScore": 52.76,
-      "evidenceConfidence": 85,
-      "ageHours": 29.4
+      "title": "French Tech: AI startups capture over 90% of €41 million weekly venture total",
+      "reason": "Published outside the 24-hour edition window (45.9h ago)",
+      "intrinsicScore": 67.07,
+      "evidenceConfidence": 90,
+      "ageHours": 45.9
     },
     {
       "storyId": "story-1793389749630-01h43",
-      "title": "Norqain's new sports watch weighs just 45 grams and withstands extreme stress",
-      "reason": "Published outside the 24-hour edition window (28.3h ago)",
-      "intrinsicScore": 52.93,
-      "evidenceConfidence": 85,
-      "ageHours": 28.3
+      "title": "Swiss watchmaker Norqain releases 45-gram Wild One Skeleton utilizing proprietary carbon composite",
+      "reason": "Published outside the 24-hour edition window (44.8h ago)",
+      "intrinsicScore": 51.63,
+      "evidenceConfidence": 90,
+      "ageHours": 44.8
+    },
+    {
+      "storyId": "story-1793389749628-swwwk",
+      "title": "ESA Space Investor Forum in Munich: Vyoma and Talos plan satellite expansion",
+      "reason": "Published outside the 24-hour edition window (44.5h ago)",
+      "intrinsicScore": 57.89,
+      "evidenceConfidence": 90,
+      "ageHours": 44.5
     },
     {
       "storyId": "story-1793389749694-p5ek4",
-      "title": "Decube Group, a Walloon gem under high tension",
-      "reason": "Published outside the 24-hour edition window (27.9h ago)",
-      "intrinsicScore": 53,
-      "evidenceConfidence": 85,
-      "ageHours": 27.9
+      "title": "Decube Group: Walloon electrical infrastructure provider expands across Benelux",
+      "reason": "Published outside the 24-hour edition window (44.4h ago)",
+      "intrinsicScore": 51.66,
+      "evidenceConfidence": 90,
+      "ageHours": 44.4
     },
     {
       "storyId": "story-1793389749687-hrz04",
       "title": "Zest's new AI agent finds restaurants and books reservations over text",
-      "reason": "Published outside the 24-hour edition window (27.8h ago)",
-      "intrinsicScore": 52.52,
-      "evidenceConfidence": 95,
-      "ageHours": 27.8
+      "reason": "Published outside the 24-hour edition window (44.3h ago)",
+      "intrinsicScore": 50.16,
+      "evidenceConfidence": 90,
+      "ageHours": 44.3
     },
     {
       "storyId": "story-1793389749689-674zm",
       "title": "Highlights of the day: Difference of interests between the USA and Lithuania and Binance as a cyber victim",
-      "reason": "Published outside the 24-hour edition window (28.3h ago)",
-      "intrinsicScore": 52.93,
+      "reason": "Published outside the 24-hour edition window (44.8h ago)",
+      "intrinsicScore": 51.13,
       "evidenceConfidence": 85,
-      "ageHours": 28.3
-    },
-    {
-      "storyId": "story-1793389749690-o9jle",
-      "title": "The “battle of the beach bars”: how Knokke is shaking up the Belgian coast by wanting to bring in competition",
-      "reason": "Published outside the 24-hour edition window (27.1h ago)",
-      "intrinsicScore": 53.14,
-      "evidenceConfidence": 85,
-      "ageHours": 27.1
+      "ageHours": 44.8
     },
     {
       "storyId": "story-1793389749683-fep7g",
-      "title": "GMV lidera projeto europeu de vigilância espacial com participação portuguesa",
-      "reason": "Published outside the 24-hour edition window (27h ago)",
-      "intrinsicScore": 53.65,
-      "evidenceConfidence": 90,
-      "ageHours": 27
+      "title": "GMV leads European space surveillance project with Portuguese participation",
+      "reason": "Published outside the 24-hour edition window (43.5h ago)",
+      "intrinsicScore": 50.72,
+      "evidenceConfidence": 85,
+      "ageHours": 43.5
     },
     {
       "storyId": "story-1793389749692-t1vmx",
       "title": "Ukrainian Fire Point manages to circumvent Starlink limitations to maintain attacks on Russia",
-      "reason": "Published outside the 24-hour edition window (26.8h ago)",
-      "intrinsicScore": 53.18,
+      "reason": "Published outside the 24-hour edition window (43.3h ago)",
+      "intrinsicScore": 50.73,
       "evidenceConfidence": 85,
-      "ageHours": 26.8
+      "ageHours": 43.3
     },
     {
       "storyId": "story-1793389749631-7t169",
       "title": "After Google's Crash, Intel Plunges 29% as A.I. Fears Hit Tech Stocks",
-      "reason": "Published outside the 24-hour edition window (27.6h ago)",
-      "intrinsicScore": 59.05,
-      "evidenceConfidence": 90,
-      "ageHours": 27.6
-    },
-    {
-      "storyId": "story-1793389749629-eckv4",
-      "title": "Don't expect huge profits from Anthropic anytime soon",
-      "reason": "Published outside the 24-hour edition window (26.5h ago)",
-      "intrinsicScore": 53.24,
+      "reason": "Published outside the 24-hour edition window (44.1h ago)",
+      "intrinsicScore": 56.67,
       "evidenceConfidence": 85,
-      "ageHours": 26.5
+      "ageHours": 44.1
     },
     {
       "storyId": "story-1793389749626-3vti1",
       "title": "TEDAI will no longer take place in Vienna",
-      "reason": "Published outside the 24-hour edition window (27.3h ago)",
-      "intrinsicScore": 53.11,
+      "reason": "Published outside the 24-hour edition window (43.8h ago)",
+      "intrinsicScore": 51.2,
       "evidenceConfidence": 85,
-      "ageHours": 27.3
+      "ageHours": 43.8
     },
     {
       "storyId": "story-1793389749694-jd684",
       "title": "TEDAI Will No Longer Take Place in Vienna",
-      "reason": "Published outside the 24-hour edition window (27.3h ago)",
-      "intrinsicScore": 53.61,
-      "evidenceConfidence": 90,
-      "ageHours": 27.3
+      "reason": "Published outside the 24-hour edition window (43.8h ago)",
+      "intrinsicScore": 51.2,
+      "evidenceConfidence": 85,
+      "ageHours": 43.8
     },
     {
       "storyId": "story-1793389749634-8osfi",
       "title": "Canada is seeking to become the first associate member of the European Union",
-      "reason": "Published outside the 24-hour edition window (26.8h ago)",
-      "intrinsicScore": 49.2,
+      "reason": "Published outside the 24-hour edition window (43.3h ago)",
+      "intrinsicScore": 47.23,
       "evidenceConfidence": 85,
-      "ageHours": 26.8
+      "ageHours": 43.3
     },
     {
       "storyId": "story-1793389749628-pr753",
       "title": "Anthony Bourbon targeted by a new complaint from Hakim Benotmane",
-      "reason": "Published outside the 24-hour edition window (26.6h ago)",
-      "intrinsicScore": 53.23,
+      "reason": "Published outside the 24-hour edition window (43.1h ago)",
+      "intrinsicScore": 51.25,
       "evidenceConfidence": 85,
-      "ageHours": 26.6
+      "ageHours": 43.1
     },
     {
       "storyId": "story-uk-budget-founders-relief-2026",
       "title": "UK Chancellor unveils “Founders’ Relief” in Budget to encourage European tech builders",
-      "reason": "Published outside the 24-hour edition window (38.3h ago)",
-      "intrinsicScore": 50.4,
+      "reason": "Published outside the 24-hour edition window (54.8h ago)",
+      "intrinsicScore": 49.38,
       "evidenceConfidence": 90,
-      "ageHours": 38.3
+      "ageHours": 54.8
     },
     {
       "storyId": "story-pdkinematics-lithuania-dronetech-2026",
       "title": "From private equity to precision strikes: Lithuania’s PDKinematics raises round for defense drones",
-      "reason": "Published outside the 24-hour edition window (39.6h ago)",
-      "intrinsicScore": 52.03,
+      "reason": "Published outside the 24-hour edition window (56.1h ago)",
+      "intrinsicScore": 51.09,
       "evidenceConfidence": 90,
-      "ageHours": 39.6
+      "ageHours": 56.1
     },
     {
       "storyId": "story-magic-vision-italy-deeptech-2026",
       "title": "Italian computer vision DeepTech Magic Vision raises €600k for automated health monitoring",
-      "reason": "Published outside the 24-hour edition window (41.1h ago)",
-      "intrinsicScore": 52.4,
+      "reason": "Published outside the 24-hour edition window (57.6h ago)",
+      "intrinsicScore": 51.54,
       "evidenceConfidence": 90,
-      "ageHours": 41.1
+      "ageHours": 57.6
     },
     {
       "storyId": "story-pickit-sweden-bankruptcy-2026",
       "title": "Swedish image curation scaleup Pickit files for bankruptcy in Visby after decade run",
-      "reason": "Published outside the 24-hour edition window (41.6h ago)",
-      "intrinsicScore": 53.6,
+      "reason": "Published outside the 24-hour edition window (58.1h ago)",
+      "intrinsicScore": 52.78,
       "evidenceConfidence": 85,
-      "ageHours": 41.6
+      "ageHours": 58.1
     },
     {
       "storyId": "story-dare2scale-2026-cohort-see",
       "title": "Endeavor Bulgaria selects 18 scaleups for Dare2Scale 2026 regional accelerator",
-      "reason": "Published outside the 24-hour edition window (42.1h ago)",
-      "intrinsicScore": 58.52,
+      "reason": "Published outside the 24-hour edition window (58.6h ago)",
+      "intrinsicScore": 57.71,
       "evidenceConfidence": 72,
-      "ageHours": 42.1
+      "ageHours": 58.6
     },
     {
       "storyId": "story-invest-austria-2026-conference",
       "title": "500+ European tech investors convene at Vienna’s invest.austria conference 2026",
-      "reason": "Published outside the 24-hour edition window (42.6h ago)",
-      "intrinsicScore": 51.03,
+      "reason": "Published outside the 24-hour edition window (59.1h ago)",
+      "intrinsicScore": 50.25,
       "evidenceConfidence": 85,
-      "ageHours": 42.6
+      "ageHours": 59.1
     },
     {
       "storyId": "story-german-startups-japan-expansion-2026",
       "title": "German tech scaleups accelerate Japan expansion through bilateral innovation corridor",
-      "reason": "Published outside the 24-hour edition window (43.1h ago)",
-      "intrinsicScore": 64.5,
+      "reason": "Published outside the 24-hour edition window (59.6h ago)",
+      "intrinsicScore": 63.73,
       "evidenceConfidence": 90,
-      "ageHours": 43.1
+      "ageHours": 59.6
     },
     {
       "storyId": "story-swansea-ai-workplace-education-2026",
       "title": "European AI researchers launch workplace education framework across enterprise hubs",
-      "reason": "Published outside the 24-hour edition window (44.1h ago)",
-      "intrinsicScore": 52.17,
-      "evidenceConfidence": 95,
-      "ageHours": 44.1
-    },
-    {
-      "storyId": "story-ai-venture-capital-transformation-2026",
-      "title": "AI tooling triggers structural divergence across European venture capital sourcing",
-      "reason": "Published outside the 24-hour edition window (45.1h ago)",
-      "intrinsicScore": 49.56,
-      "evidenceConfidence": 72,
-      "ageHours": 45.1
-    },
-    {
-      "storyId": "story-sifted-executive-talent-split-2026",
-      "title": "European startup executive talent market splits as AI demand eclipses legacy tech roles",
-      "reason": "Published outside the 24-hour edition window (46.1h ago)",
-      "intrinsicScore": 56.3,
-      "evidenceConfidence": 90,
-      "ageHours": 46.1
-    },
-    {
-      "storyId": "story-1793267527365-8wmvd",
-      "title": "Africa's Startup Ecosystem: Who Gets to Build and Fund Africa's Next Economic Phase?",
-      "reason": "Published outside the 24-hour edition window (59.9h ago)",
-      "intrinsicScore": 46.98,
-      "evidenceConfidence": 90,
-      "ageHours": 59.9
-    },
-    {
-      "storyId": "story-1793267527365-qjat2",
-      "title": "Ireland’s Vectigo unveils new road safety platform in the US",
-      "reason": "Published outside the 24-hour edition window (60.7h ago)",
-      "intrinsicScore": 51.45,
-      "evidenceConfidence": 95,
-      "ageHours": 60.7
-    },
-    {
-      "storyId": "story-1793267527365-y3qai",
-      "title": "Fronted raises €1.7M to simplify global hiring and business expansion",
       "reason": "Published outside the 24-hour edition window (60.6h ago)",
-      "intrinsicScore": 61.7,
+      "intrinsicScore": 51.45,
       "evidenceConfidence": 95,
       "ageHours": 60.6
     },
     {
-      "storyId": "story-1793267527364-8ycfr",
-      "title": "Rise of AI not deterring parents from backing their child’s STEM interests",
-      "reason": "Published outside the 24-hour edition window (60.3h ago)",
-      "intrinsicScore": 57.22,
-      "evidenceConfidence": 95,
-      "ageHours": 60.3
-    },
-    {
-      "storyId": "story-1793267527363-egbrp",
-      "title": "BY Venture Partners closes $60M Fund III and opens Lisbon office to deepen European push",
-      "reason": "Published outside the 24-hour edition window (60.2h ago)",
-      "intrinsicScore": 67.72,
-      "evidenceConfidence": 95,
-      "ageHours": 60.2
-    },
-    {
-      "storyId": "story-1793263947776-bf9p7",
-      "title": "Auriga Partners reaches €80 million interim close for second fund dedicated to cybersecurity",
-      "reason": "Published outside the 24-hour edition window (62.1h ago)",
-      "intrinsicScore": 62.47,
-      "evidenceConfidence": 95,
-      "ageHours": 62.1
-    },
-    {
-      "storyId": "story-1793263947776-6pwlh",
-      "title": "Entourage raises €100M for second fund, targeting AI, robotics and deeptech",
-      "reason": "Published outside the 24-hour edition window (62.6h ago)",
-      "intrinsicScore": 66.41,
-      "evidenceConfidence": 95,
-      "ageHours": 62.6
-    },
-    {
-      "storyId": "story-1793263947775-jq9qr",
-      "title": "KineDB raises €850K to rebuild database infrastructure as AI reshapes software development",
-      "reason": "Published outside the 24-hour edition window (62.6h ago)",
-      "intrinsicScore": 60.41,
-      "evidenceConfidence": 95,
-      "ageHours": 62.6
-    },
-    {
-      "storyId": "story-1793263947775-8edd0",
-      "title": "EXCLUSIVE: Freiburg’s VUSE XR raises €1.2 million to bring AI-powered mixed reality training to enterprises",
+      "storyId": "story-ai-venture-capital-transformation-2026",
+      "title": "AI tooling triggers structural divergence across European venture capital sourcing",
       "reason": "Published outside the 24-hour edition window (61.6h ago)",
-      "intrinsicScore": 59.74,
-      "evidenceConfidence": 95,
+      "intrinsicScore": 48.87,
+      "evidenceConfidence": 72,
       "ageHours": 61.6
     },
     {
-      "storyId": "story-1793263947774-qyqci",
-      "title": "Autumn Budget 2026: UK tech leaders react to AI investment and business support",
-      "reason": "Published outside the 24-hour edition window (61h ago)",
-      "intrinsicScore": 53.2,
+      "storyId": "story-sifted-executive-talent-split-2026",
+      "title": "European startup executive talent market splits as AI demand eclipses legacy tech roles",
+      "reason": "Published outside the 24-hour edition window (62.6h ago)",
+      "intrinsicScore": 55.66,
       "evidenceConfidence": 90,
-      "ageHours": 61
+      "ageHours": 62.6
     }
   ],
   "softCapRelaxations": [],
-  "averageIntrinsicScore": 61.7
+  "averageIntrinsicScore": 63.5
 }
